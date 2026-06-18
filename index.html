@@ -1196,6 +1196,375 @@ body {
   opacity: 0.3;
   pointer-events: none;
 }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ██████████████████████████████████████████████████████████████████
+   ███  MEDIA QUERIES — ADAPTACIÓN MÓVIL (añadidas para responsive) ███
+   ██████████████████████████████████████████████████████████████████
+   Estrategia: Mobile-First overlay.
+   — No se modifica ningún estilo de escritorio existente.
+   — Se aplican SOLO dentro de estos bloques @media.
+   — Se preservan intactos todos los scripts AdSense y metatags.
+════════════════════════════════════════════════════════════════════ */
+
+
+/* ──────────────────────────────────────────────────────────────────
+   TABLET Y MÓVIL — max-width: 768px
+   Cubre smartphones en landscape/portrait y tablets pequeñas.
+────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* ── CURSOR PERSONALIZADO
+     En táctil el cursor CSS no tiene sentido; se oculta y se restaura
+     el cursor nativo del sistema. ── */
+  body { cursor: auto; }
+  a, button, .nebula-node, .tool-card, .btn-ficha-tecnica { cursor: auto; }
+  #cursor-outer, #cursor-inner { display: none; }
+
+  /* ── HERO TITLE
+     El clamp() original ya es fluido, pero en pantallas muy estrechas
+     el letter-spacing negativo comprime demasiado; lo suavizamos. ── */
+  #title {
+    font-size: clamp(36px, 13vw, 80px);
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+  }
+
+  #subtitle {
+    font-size: clamp(10px, 2.8vw, 13px);
+    letter-spacing: 0.1em;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  /* ── HEADER DEL SHUTTER
+     Reducir padding lateral y reordenar para que el botón "Subir"
+     y el contador quepan en la misma línea sin desbordarse. ── */
+  #neb-header {
+    padding: 14px 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .neb-header-nav {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── BOTÓN "SUBIR A PORTADA"
+     Posición absoluta centrada → relativa en el header para
+     que no tape el contador en pantallas estrechas. ── */
+  .btn-back-to-hero {
+    position: static;
+    transform: none;
+    font-size: 8px;
+    padding: 7px 12px;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  /* ── KEYBOARD HINT
+     Las teclas de teclado no aplican en móvil: se ocultan. ── */
+  .keyboard-hint {
+    display: none;
+  }
+
+  /* ── FOOTER DEL SHUTTER ── */
+  #neb-footer {
+    padding: 10px 0 14px;
+    gap: 2px;
+  }
+
+  #counterDisplay {
+    font-size: 10px;
+  }
+
+  .neb-footer-label {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+
+  /* ── NEBULA CAROUSEL
+     En móvil el carrusel 3D puede verse cortado; se ajusta el
+     tamaño de nodo y el padding del stage. ── */
+  #stage3D {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  .nebula-node {
+    width: 220px;
+    height: 280px;
+  }
+
+  #carousel3D {
+    width: 220px;
+    height: 280px;
+  }
+
+  .nebula-title {
+    font-size: 34px;
+    margin-bottom: 10px;
+  }
+
+  .nebula-canvas-container {
+    width: 180px;
+    height: 180px;
+  }
+
+  /* ── DETAILS VIEW — vista de catálogo
+     La cuadrícula de 2 columnas pasa a 1 columna apilada. ── */
+  #detailsContent {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .details-left {
+    border-right: none;
+    border-bottom: 1px solid var(--bv-gray-light);
+    padding: 28px 20px;
+    gap: 16px;
+  }
+
+  .details-left-canvas-wrap {
+    width: 100px;
+    height: 100px;
+  }
+
+  .details-left-title {
+    font-size: clamp(28px, 7vw, 44px);
+  }
+
+  .details-left-sub {
+    font-size: 11px;
+    max-width: 100%;
+  }
+
+  .details-header-bar {
+    padding: 14px 16px;
+    gap: 8px;
+  }
+
+  .details-breadcrumb {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  #btnCloseDetails {
+    padding: 9px 16px;
+    font-size: 10px;
+  }
+
+  /* ── CATALOG HEADER con controles de ordenación ── */
+  .catalog-header {
+    padding: 14px 16px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .catalog-header-left {
+    gap: 8px;
+  }
+
+  .sort-controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sort-select {
+    font-size: 10px;
+    padding: 8px 28px 8px 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sort-direction-btn {
+    font-size: 10px;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  /* ── TOOL GRID
+     Pasa de 2 columnas a 1 columna para lectura cómoda. ── */
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-card {
+    padding: 20px 16px 18px;
+    gap: 8px;
+  }
+
+  .tool-card-name {
+    font-size: 18px;
+  }
+
+  .tool-card-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .btn-ficha-tecnica {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 12px 18px;
+    font-size: 11px;
+  }
+
+  .tool-card-link {
+    font-size: 10px;
+  }
+
+  /* ── PROFILE PAGE (ficha técnica) ── */
+  .profile-header-bar {
+    padding: 14px 16px;
+    gap: 8px;
+  }
+
+  .profile-breadcrumb {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  #btnCloseProfile {
+    padding: 9px 14px;
+    font-size: 10px;
+    gap: 6px;
+  }
+
+  .profile-body {
+    padding: 20px 16px 32px;
+  }
+
+  /* profile-content: ya tiene media query a 860px que colapsa a 1 col,
+     pero aquí afinamos el max-width y el gap para móvil puro. */
+  .profile-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 100%;
+  }
+
+  .profile-col-ad {
+    position: static;
+    order: 99;
+  }
+
+  .adsense-placeholder.sidebar-ad {
+    min-height: 90px;
+  }
+
+  .profile-title {
+    font-size: clamp(32px, 8vw, 56px);
+  }
+
+  .profile-desc {
+    font-size: 12px;
+    max-width: 100%;
+  }
+
+  .profile-badges {
+    gap: 8px;
+  }
+
+  .profile-badge {
+    font-size: 9px;
+    padding: 6px 12px;
+  }
+
+  .profile-metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .profile-cost-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .profile-ideal-card {
+    padding: 18px 16px;
+  }
+
+  .profile-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 24px;
+    font-size: 11px;
+  }
+
+  /* ── ADSENSE PLACEHOLDERS
+     En móvil los skyscrapers se adaptan a banner horizontal. ── */
+  .adsense-placeholder.skyscraper {
+    min-height: 100px;
+  }
+
+  .adsense-catalog-footer {
+    padding: 0 16px 16px;
+  }
+
+}
+/* ── FIN @media (max-width: 768px) ── */
+
+
+/* ──────────────────────────────────────────────────────────────────
+   MÓVIL PEQUEÑO — max-width: 400px
+   Ajustes extra para smartphones con pantallas muy estrechas
+   (iPhone SE, Galaxy A, etc.)
+────────────────────────────────────────────────────────────────── */
+@media (max-width: 400px) {
+
+  #title {
+    font-size: clamp(30px, 14vw, 54px);
+    letter-spacing: -0.02em;
+  }
+
+  .nebula-node {
+    width: 180px;
+    height: 240px;
+  }
+
+  #carousel3D {
+    width: 180px;
+    height: 240px;
+  }
+
+  .nebula-title {
+    font-size: 28px;
+  }
+
+  .nebula-canvas-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  .profile-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header-bar,
+  .profile-header-bar {
+    padding: 12px 12px;
+  }
+
+  .tool-card {
+    padding: 16px 12px 14px;
+  }
+
+}
+/* ── FIN @media (max-width: 400px) ── */
+
+
+/* ════════════════════════════════════════════════════════════════════
+   FIN DE MEDIA QUERIES MÓVIL — BITVERSUS responsive v1.0
+════════════════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
