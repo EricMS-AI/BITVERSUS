@@ -1,0 +1,3127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BITVERSUS — Directorio de Herramientas IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<meta name="google-adsense-account" content="ca-pub-5469910155680109">
+
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   RESET & ROOT
+════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bv-black:      #111111;
+  --bv-white:      #FFFFFF;
+  --bv-gray-light: #F3F4F6;
+  --bv-gray-mid:   #D1D5DB;
+  --bv-gray-text:  #9CA3AF;
+  --font-mono:     'Space Mono', monospace;
+  --font-display:  'Bebas Neue', sans-serif;
+  --font-syne:     'Syne', sans-serif;
+}
+
+html {
+  background: #fff;
+  overflow-x: hidden;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   CUSTOM CURSOR — inercia física estilo Active Theory
+════════════════════════════════════════════════════════════════════ */
+body { cursor: none; }
+a, button, .nebula-node, .tool-card, .btn-ficha-tecnica { cursor: none; }
+
+#cursor-outer {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  top: 0; left: 0;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.16,1,0.3,1),
+              height 0.3s cubic-bezier(0.16,1,0.3,1),
+              background 0.3s,
+              border-color 0.3s,
+              mix-blend-mode 0.2s;
+  will-change: transform;
+}
+#cursor-inner {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: #111111;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10002;
+  top: 0; left: 0;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.16,1,0.3,1);
+}
+body.cursor-hover #cursor-outer {
+  width: 60px;
+  height: 60px;
+  background: #111111;
+  border-color: transparent;
+  mix-blend-mode: difference;
+}
+body.cursor-active #cursor-inner {
+  transform: translate(-50%, -50%) scale(0.6);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADSENSE CONTAINERS — slots neutros sin estética propia.
+   Sin background/border/pseudoelementos: si AdSense no inyecta el
+   <ins class="adsbygoogle">, el contenedor no deja huecos visibles.
+   Los modificadores (.sidebar-ad, .skyscraper) solo reservan espacio
+   físico (width/height/margin) para no romper el layout circundante,
+   pero permanecen 100% transparentes.
+════════════════════════════════════════════════════════════════════ */
+.adsense-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* — Skyscraper adaptativo en catálogo — */
+.adsense-catalog-footer {
+  grid-column: 1 / -1;
+  padding: 0 28px 28px;
+}
+.adsense-placeholder.skyscraper {
+  width: 100%;
+  min-height: 200px;
+  margin: 0;
+}
+
+/* Altura de scroll total:
+   600px lock del hero + 600px de viaje del shutter + 100vh de contenido */
+body {
+  background: #fff;
+  overflow-x: hidden;
+  min-height: calc(1000px + 600px + 100vh);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HERO — fijo durante el tramo 0→FADE_END, luego desaparece
+════════════════════════════════════════════════════════════════════ */
+#hero {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  background: #fff;
+  z-index: 10;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#webgl {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+#text-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  perspective: 900px;
+}
+
+#text-pivot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+#title {
+  font-family: var(--font-syne);
+  font-weight: 800;
+  font-size: clamp(48px, 11vw, 148px);
+  line-height: 0.75;
+  letter-spacing: -0.08em;
+  color: #000000;
+  text-transform: uppercase;
+  text-align: center;
+  user-select: none;
+}
+
+#subtitle {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: clamp(9px, 0.85vw, 13px);
+  letter-spacing: 0.14em;
+  color: #000000;
+  text-align: center;
+  margin-top: clamp(14px, 2.8vh, 34px);
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCROLL HINT
+════════════════════════════════════════════════════════════════════ */
+#hint {
+  position: fixed;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #000;
+  opacity: 0.22;
+  z-index: 50;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SHUTTER — sube para revelar el universo de nebulosas
+   overflow: hidden para recortar header/footer anclados como absolute
+════════════════════════════════════════════════════════════════════ */
+#shutter {
+  position: fixed;
+  top: 100vh;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+  z-index: 30;
+  will-change: transform;
+  overflow: hidden;  /* recorta el #app-nebulas para que no se desborde */
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   APP NEBULOSAS — contenedor principal dentro del shutter
+════════════════════════════════════════════════════════════════════ */
+#app-nebulas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--bv-white);
+  color: var(--bv-black);
+  font-family: var(--font-mono);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ─── HEADER (absolute, confinado en #shutter) ─── */
+#neb-header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 20px 40px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--bv-gray-light);
+}
+
+.neb-header-nav {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bv-gray-text);
+}
+.neb-header-nav span { color: var(--bv-black); }
+
+/* ─── STAGE 3D ─── */
+#stage3D {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1600px;
+  perspective-origin: 50% 46%;
+  overflow: hidden;
+  cursor: default;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+#carousel3D {
+  position: relative;
+  width: 300px;
+  height: 360px;
+  transform-style: preserve-3d;
+  /* Oculto hasta que la cinemática posicione los nodos correctamente */
+  visibility: hidden;
+}
+
+/* ─── NEBULA NODE ─── */
+.nebula-node {
+  position: absolute;
+  top: 0; left: 0;
+  width: 300px; height: 360px;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0;
+  visibility: hidden;        /* doble barrera anti-flash frame-0 */
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0s linear 0.6s; /* retrasa visibility:visible para no cortar el fade */
+  /* transform excluido de transition → 60fps sin retención elástica */
+}
+
+.nebula-title {
+  font-family: var(--font-display);
+  font-size: 46px;
+  color: var(--bv-black);
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  text-align: center;
+  line-height: 0.9;
+  pointer-events: none;
+}
+
+.nebula-canvas-container {
+  width: 240px; height: 240px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+.nebula-canvas-container canvas { display: block; }
+
+/* ─── FOOTER (absolute, confinado en #shutter) ─── */
+#neb-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 0 18px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--bv-gray-light);
+}
+
+#counterDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--bv-black);
+}
+
+.counter-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bv-black);
+  flex-shrink: 0;
+}
+
+.neb-footer-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.28em;
+  color: var(--bv-gray-text);
+}
+
+/* ─── KEYBOARD HINT (absolute, confinado en #shutter) ─── */
+.keyboard-hint {
+  position: absolute;
+  bottom: 72px; right: 36px;
+  z-index: 190;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--bv-gray-text);
+  opacity: 0.55;
+}
+
+.key-badge {
+  background: var(--bv-gray-light);
+  border: 1px solid var(--bv-gray-mid);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   DETAILS VIEW (absolute, confinado en #shutter)
+════════════════════════════════════════════════════════════════════ */
+#detailsView {
+  position: absolute;
+  inset: 0;
+  z-index: 500;
+  background: var(--bv-white);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.94) translateZ(-60px);
+  transition: opacity 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+}
+#detailsView.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1) translateZ(0);
+}
+
+.details-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 44px;
+  border-bottom: 1px solid var(--bv-gray-light);
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2;
+}
+
+.details-breadcrumb {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--bv-gray-text);
+  letter-spacing: 0.14em;
+}
+
+#btnCloseDetails {
+  background: var(--bv-black);
+  color: var(--bv-white);
+  border: none;
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+#btnCloseDetails:hover { opacity: 0.7; }
+
+#detailsContent {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  overflow: hidden;
+  background: var(--bv-white);
+}
+
+/* ─── DETAILS LEFT — Nebula Hero ─── */
+.details-left {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 36px;
+  border-right: 1px solid var(--bv-gray-light);
+  background: var(--bv-white);
+  gap: 24px;
+}
+
+.details-left-canvas-wrap {
+  position: relative;
+  width: 140px; height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-left-shadow {
+  position: absolute;
+  bottom: -24px;
+  width: 100px; height: 14px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  filter: blur(6px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.details-left-canvas-wrap canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.details-left-overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.details-category-pill {
+  display: inline-block;
+  background: var(--bv-gray-light);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--bv-black);
+}
+
+.details-left-title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.5vw, 56px);
+  font-weight: 400;
+  color: var(--bv-black);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 0.95;
+}
+
+.details-left-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--bv-gray-text);
+  letter-spacing: 0.01em;
+  line-height: 1.75;
+  max-width: 320px;
+}
+
+.details-tool-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bv-black);
+  letter-spacing: 0.06em;
+  background: var(--bv-gray-light);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+/* ─── DETAILS RIGHT — Catalog ─── */
+.details-right {
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  display: flex;
+  flex-direction: column;
+  background: var(--bv-white);
+  outline: none; /* recibe foco programático sin anillo visible */
+}
+.details-right::-webkit-scrollbar { width: 4px; }
+.details-right::-webkit-scrollbar-track { background: var(--bv-gray-light); }
+.details-right::-webkit-scrollbar-thumb { background: var(--bv-gray-mid); border-radius: 2px; }
+
+/* ─── CATALOG HEADER con controles de ordenación ─── */
+.catalog-header {
+  padding: 20px 40px 16px;
+  border-bottom: 1px solid var(--bv-gray-light);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.catalog-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.catalog-header h3 {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--bv-black);
+}
+
+.catalog-header .tool-tally {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--bv-gray-text);
+}
+
+/* ─── SORT CONTROLS ─── */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-select {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--bv-black);
+  background: var(--bv-gray-light);
+  border: 1px solid var(--bv-gray-mid);
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239CA3AF'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.sort-select:hover, .sort-select:focus { border-color: var(--bv-black); }
+
+.sort-direction-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--bv-black);
+  background: var(--bv-gray-light);
+  border: 1px solid var(--bv-gray-mid);
+  border-radius: 6px;
+  padding: 7px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sort-direction-btn:hover { border-color: var(--bv-black); }
+.sort-direction-btn.desc-active {
+  background: var(--bv-black);
+  color: var(--bv-white);
+  border-color: var(--bv-black);
+}
+
+/* ─── TOOL GRID ─── */
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--bv-gray-light);
+  flex: 1;
+  transition: opacity 0.3s ease;
+}
+.tool-grid.sorting { opacity: 0; }
+
+.tool-card {
+  background: var(--bv-white);
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background 0.15s;
+}
+.tool-card:hover { background: #FAFAFA; }
+
+.tool-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tool-card-name {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--bv-black);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.tool-card-empresa {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--bv-gray-text);
+  background: var(--bv-gray-light);
+  padding: 4px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 3px;
+}
+
+.tool-card-desc {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--bv-gray-text);
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+/* ─── MÉTRICAS ─── */
+.tool-card-metrics {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.metric-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  padding: 3px 7px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.metric-badge.score { background: #EEF2FF; color: #4338CA; }
+.metric-badge.perf  { background: #F0FDF4; color: #166534; }
+.metric-badge.speed { background: #FFF7ED; color: #9A3412; }
+.metric-badge.price { background: #F9FAFB; color: #374151; border: 1px solid var(--bv-gray-mid); }
+.metric-badge.free  { background: #ECFDF5; color: #065F46; }
+
+.tool-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bv-black);
+  text-decoration: none;
+  border-bottom: 1px solid var(--bv-gray-mid);
+  padding-bottom: 2px;
+  align-self: flex-start;
+  transition: border-color 0.15s;
+  pointer-events: auto;
+}
+.tool-card-link:hover { border-color: var(--bv-black); }
+
+.catalog-empty {
+  grid-column: 1 / -1;
+  padding: 60px 40px;
+  text-align: center;
+  color: var(--bv-gray-text);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 2;
+}
+
+#emptyState { display: none; align-items: center; justify-content: center; height: 100%; color: var(--bv-gray-text); }
+#emptyState.show { display: flex; }
+#emptyState p { font-size: 12px; letter-spacing: 0.1em; }
+
+/* ─── BOTÓN "VER FICHA TÉCNICA" ─── */
+.tool-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.btn-ficha-tecnica {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bv-white);
+  background: var(--bv-black);
+  border: none;
+  border-radius: 50px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  pointer-events: auto;
+}
+.btn-ficha-tecnica:hover { opacity: 0.78; }
+.btn-ficha-tecnica:active { transform: scale(0.97); }
+
+/* ════════════════════════════════════════════════════════════════════
+   #IA-PROFILE-PAGE — Subpágina interna de ficha técnica (Layered View)
+════════════════════════════════════════════════════════════════════ */
+#ia-profile-page {
+  position: absolute;
+  inset: 0;
+  z-index: 800;
+  background: var(--bv-white);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  will-change: transform;
+}
+#ia-profile-page.visible {
+  transform: translateX(0%);
+}
+
+.profile-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 44px;
+  border-bottom: 1px solid var(--bv-gray-light);
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2;
+}
+
+.profile-breadcrumb {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--bv-gray-text);
+  letter-spacing: 0.14em;
+  font-family: var(--font-mono);
+}
+
+#btnCloseProfile {
+  background: var(--bv-black);
+  color: var(--bv-white);
+  border: none;
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#btnCloseProfile:hover { opacity: 0.7; }
+
+.profile-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* suavidad en iOS */
+  overscroll-behavior-y: contain;    /* solo eje Y: evita scroll chaining sin romper el scroll normal */
+  padding: 48px;
+  display: flex;
+  justify-content: center;
+  outline: none; /* recibe foco programático sin anillo visible */
+}
+.profile-body::-webkit-scrollbar { width: 4px; }
+.profile-body::-webkit-scrollbar-track { background: var(--bv-gray-light); }
+.profile-body::-webkit-scrollbar-thumb { background: var(--bv-gray-mid); border-radius: 2px; }
+
+.profile-content {
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ─── Columna izquierda: anuncio sticky ─── */
+.profile-col-ad {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Columna derecha: todo el contenido de la ficha ─── */
+.profile-col-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0; /* evita overflow en grids */
+}
+
+/* ─── Ad lateral en ficha técnica — solo reserva espacio, sin decoración ─── */
+.adsense-placeholder.sidebar-ad {
+  width: 100%;
+  min-height: 400px;
+  margin: 0;
+}
+
+/* ─── Responsive: colapsa a 1 columna en pantallas estrechas ─── */
+@media (max-width: 860px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+  }
+  .profile-col-ad {
+    position: static;
+    order: 99; /* el ad va al final en móvil */
+  }
+  .adsense-placeholder.sidebar-ad {
+    min-height: 120px;
+  }
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 50px;
+}
+.profile-badge.name      { background: var(--bv-black); color: var(--bv-white); }
+.profile-badge.empresa   { background: var(--bv-gray-light); color: var(--bv-black); border: 1px solid var(--bv-gray-mid); }
+.profile-badge.categoria { background: #EEF2FF; color: #4338CA; }
+
+.profile-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 76px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bv-black);
+}
+
+.profile-desc {
+  font-size: 13px;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  color: var(--bv-gray-text);
+  max-width: 640px;
+}
+
+.profile-ideal-card {
+  background: var(--bv-gray-light);
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-ideal-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--bv-gray-text);
+}
+
+.profile-ideal-text {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--bv-black);
+}
+
+/* ─── DASHBOARD DE MÉTRICAS ─── */
+.profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.profile-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-metric-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bv-gray-text);
+}
+
+.profile-metric-value {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--bv-black);
+  letter-spacing: 0.04em;
+}
+
+.profile-metric-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bv-gray-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.profile-metric-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.profile-metric-bar-fill.score { background: #4338CA; }
+.profile-metric-bar-fill.perf  { background: #166534; }
+.profile-metric-bar-fill.speed { background: #9A3412; }
+
+/* ─── BLOQUE "COSTE" — PLANES TRIPLE NIVEL ─── */
+.profile-cost-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profile-cost-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--bv-gray-text);
+}
+
+.profile-cost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.cost-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 22px 24px;
+  border-radius: 14px;
+  border: 1px solid var(--bv-gray-mid);
+  background: var(--bv-white);
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cost-plan:hover { transform: translateY(-2px); }
+
+.cost-plan-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--bv-gray-text);
+  text-transform: uppercase;
+}
+
+.cost-plan-price {
+  font-family: var(--font-display);
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  color: var(--bv-black);
+  line-height: 1;
+}
+.cost-plan-price small {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bv-gray-text);
+  letter-spacing: 0.06em;
+  margin-left: 2px;
+}
+
+.cost-plan-desc {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--bv-gray-text);
+  letter-spacing: 0.01em;
+}
+
+/* Plan destacado/recomendado: contraste fuerte */
+.cost-plan.featured {
+  background: var(--bv-black);
+  border-color: var(--bv-black);
+  box-shadow: 0 12px 30px -10px rgba(0,0,0,0.35);
+}
+.cost-plan.featured .cost-plan-name   { color: var(--bv-gray-mid); }
+.cost-plan.featured .cost-plan-price  { color: var(--bv-white); }
+.cost-plan.featured .cost-plan-price small { color: var(--bv-gray-mid); }
+.cost-plan.featured .cost-plan-desc   { color: var(--bv-gray-mid); }
+
+.cost-plan-tag {
+  position: absolute;
+  top: -10px; right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 50px;
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.cost-plan.featured .cost-plan-tag {
+  background: var(--bv-white);
+  color: var(--bv-black);
+  border-color: var(--bv-white);
+}
+
+/* ─── CTA FINAL ─── */
+.profile-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--bv-white);
+  background: var(--bv-black);
+  border: none;
+  border-radius: 50px;
+  padding: 18px 32px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+.profile-cta:hover { opacity: 0.78; }
+.profile-cta:active { transform: scale(0.97); }
+
+/* ════════════════════════════════════════════════════════════════════
+   BTN-BACK-TO-HERO — botón flotante "Subir a portada"
+════════════════════════════════════════════════════════════════════ */
+.btn-back-to-hero {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  z-index: 201;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bv-gray-text);
+  background: transparent;
+  border: 1px solid var(--bv-gray-mid);
+  border-radius: 50px;
+  padding: 8px 16px;
+  cursor: pointer;
+  opacity: 0;                  /* invisible hasta que la cinemática complete */
+  pointer-events: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.btn-back-to-hero::before {
+  content: '↑';
+  font-size: 11px;
+  line-height: 1;
+}
+.btn-back-to-hero:hover {
+  color: var(--bv-black);
+  border-color: var(--bv-black);
+  background: rgba(17,17,17,0.04);
+}
+.btn-back-to-hero.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* Durante la animación inversa el botón se atenúa */
+.btn-back-to-hero.returning {
+  opacity: 0.3;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- ░░░ CURSOR PERSONALIZADO CON INERCIA FÍSICA ░░░ -->
+<div id="cursor-outer" aria-hidden="true"></div>
+<div id="cursor-inner" aria-hidden="true"></div>
+
+<!-- ░░░ HERO ░░░ -->
+<section id="hero">
+  <div id="text-layer">
+    <div id="text-pivot">
+      <h1 id="title">BITVERSUS</h1>
+      <p id="subtitle">&nbsp;Directorio y comparador de herramientas con IA.</p>
+    </div>
+  </div>
+  <canvas id="webgl"></canvas>
+</section>
+
+<!-- ░░░ SHUTTER — contiene el universo de nebulosas ░░░ -->
+<div id="shutter">
+  <div id="app-nebulas">
+
+    <!-- Header (absolute dentro de #shutter) -->
+    <header id="neb-header">
+      <button class="btn-back-to-hero" id="btnBackToHero" aria-label="Subir a portada">Subir a portada</button>
+      <div class="neb-header-nav">
+        <span>8</span>&nbsp;UNIVERSOS&nbsp;·&nbsp;<span id="counterText">1 / 8</span>
+      </div>
+    </header>
+
+    <!-- Escenario 3D del carrusel -->
+    <div id="stage3D">
+      <div id="carousel3D"></div>
+      <div id="emptyState"><p>◌&nbsp;&nbsp;CARGANDO</p></div>
+    </div>
+
+    <!-- Footer (absolute dentro de #shutter) -->
+    <footer id="neb-footer">
+      <div id="counterDisplay">
+        <div class="counter-dot"></div>
+        <span id="counterTextFooter">IMAGEN Y ARTE GENERATIVO</span>
+      </div>
+      <div class="neb-footer-label">EXPLORAR UNIVERSOS DE IA</div>
+    </footer>
+
+    <!-- Hint de teclado -->
+    <div class="keyboard-hint">
+      <span class="key-badge">←</span>
+      <span class="key-badge">→</span>
+      <span>navegar</span>
+    </div>
+
+    <!-- Vista de detalle del catálogo -->
+    <div id="detailsView" tabindex="-1">
+      <div class="details-header-bar">
+        <span class="details-breadcrumb" id="detailsBreadcrumb">BITVERSUS → UNIVERSO</span>
+        <button id="btnCloseDetails">← VOLVER</button>
+      </div>
+      <div id="detailsContent"></div>
+
+      <!-- Subpágina interna de ficha técnica (Layered View) -->
+      <div id="ia-profile-page" tabindex="-1">
+        <div class="profile-header-bar">
+          <span class="profile-breadcrumb" id="profileBreadcrumb">BITVERSUS → FICHA TÉCNICA</span>
+          <button id="btnCloseProfile">✕ &nbsp;VOLVER AL CATÁLOGO</button>
+        </div>
+        <div class="profile-body" tabindex="-1">
+          <div class="profile-content" id="profileContent"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-nebulas -->
+</div><!-- /shutter -->
+
+<!-- ░░░ HINT DE SCROLL ░░░ -->
+<div id="hint">SCROLL TO ENGAGE &nbsp;↓</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     JAVASCRIPT UNIFICADO
+════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+(function () {
+
+/* ══════════════════════════════════════════════════════════════════
+   ① BASE DE DATOS — 8 UNIVERSOS × 8 HERRAMIENTAS = 64 IAs REALES
+══════════════════════════════════════════════════════════════════ */
+const IA_DATABASE = [
+  {
+    id: "#01",
+    nombre: "Imagen y Arte Generativo",
+    descripcion: "Motores de síntesis visual que transforman instrucciones en imágenes, ilustraciones y obras de arte mediante modelos de difusión y redes generativas adversarias.",
+    colorBase:  [0.85, 0.75, 0.95],
+    colorFlash: [0.98, 0.82, 0.88],
+    subherramientas: [
+      { nombre: "Midjourney",           empresa: "Midjourney Inc.",      descripcion: "Generador de imágenes fotorrealistas y artísticas mediante prompts avanzados en Discord.",             puntuacion: 4.9, rendimiento: 96, rapidez: 80, precio: 10 },
+      { nombre: "DALL-E 3",             empresa: "OpenAI",               descripcion: "Integrado en ChatGPT. Excelente comprensión del lenguaje natural y textos dentro de imágenes.",         puntuacion: 4.7, rendimiento: 92, rapidez: 88, precio: 20 },
+      { nombre: "Stable Diffusion XL",  empresa: "Stability AI",         descripcion: "Modelo de código abierto ultra-configurable para generación y control total de imágenes.",              puntuacion: 4.6, rendimiento: 90, rapidez: 75, precio:  0 },
+      { nombre: "Adobe Firefly",         empresa: "Adobe",                descripcion: "Herramienta comercial entrenada con contenido ético y libre de derechos de autor.",                     puntuacion: 4.5, rendimiento: 88, rapidez: 85, precio:  5 },
+      { nombre: "Canva Magic Design",    empresa: "Canva",                descripcion: "Generación automática de plantillas de diseño gráfico y posts para redes sociales.",                    puntuacion: 4.2, rendimiento: 80, rapidez: 90, precio:  0 },
+      { nombre: "Leonardo.ai",           empresa: "Leonardo Interactive", descripcion: "Plataforma de generación de assets artísticos y texturas para videojuegos.",                           puntuacion: 4.6, rendimiento: 89, rapidez: 82, precio:  0 },
+      { nombre: "Magnific AI",           empresa: "Magnific",             descripcion: "Herramienta premium de reescalado y mejora de detalles por IA generativa.",                            puntuacion: 4.8, rendimiento: 95, rapidez: 70, precio: 39 },
+      { nombre: "Photoroom",             empresa: "Photoroom",            descripcion: "Especialista en eliminar fondos y crear fotografía de producto profesional.",                            puntuacion: 4.4, rendimiento: 85, rapidez: 92, precio: 10 }
+    ]
+  },
+  {
+    id: "#02",
+    nombre: "Vídeo y Animación Cinemática",
+    descripcion: "Sistemas que generan y editan secuencias de vídeo con física simulada, coherencia temporal absoluta y control de cámara cinematográfico frame a frame.",
+    colorBase:  [0.72, 0.88, 0.98],
+    colorFlash: [0.75, 0.95, 0.88],
+    subherramientas: [
+      { nombre: "Runway Gen-3",        empresa: "Runway",     descripcion: "Generador cinematográfico de texto a vídeo con físicas e hiperrealismo impresionantes.",           puntuacion: 4.8, rendimiento: 94, rapidez: 75, precio: 12 },
+      { nombre: "Sora",                empresa: "OpenAI",     descripcion: "Modelo de generación de vídeo de alta fidelidad que simula físicas del mundo real.",               puntuacion: 4.9, rendimiento: 97, rapidez: 65, precio: 25 },
+      { nombre: "Luma Dream Machine",  empresa: "Luma Labs",  descripcion: "Generación de vídeos en alta definición rápidos con movimientos de cámara fluidos.",              puntuacion: 4.6, rendimiento: 88, rapidez: 80, precio:  0 },
+      { nombre: "Pika 2.0",            empresa: "Pika Labs",  descripcion: "Ideal para animación de efectos especiales y modificaciones de objetos en vídeo.",                puntuacion: 4.4, rendimiento: 85, rapidez: 85, precio:  0 },
+      { nombre: "HeyGen",              empresa: "HeyGen",     descripcion: "Creación de avatares hiperrealistas de vídeo para portavoces corporativos.",                      puntuacion: 4.7, rendimiento: 93, rapidez: 90, precio: 24 },
+      { nombre: "Synthesia",           empresa: "Synthesia",  descripcion: "Plataforma de vídeo corporativo a escala global con avatares en 120 idiomas.",                    puntuacion: 4.6, rendimiento: 91, rapidez: 88, precio: 22 },
+      { nombre: "Kling AI",            empresa: "Kuaishou",   descripcion: "Generador de vídeo con movimientos humanos fluidos de larga duración.",                           puntuacion: 4.5, rendimiento: 87, rapidez: 70, precio:  0 },
+      { nombre: "CapCut AI",           empresa: "ByteDance",  descripcion: "Herramienta automática para edición rápida, subtitulado y efectos de vídeo.",                    puntuacion: 4.3, rendimiento: 82, rapidez: 93, precio:  0 }
+    ]
+  },
+  {
+    id: "#03",
+    nombre: "Audio, Voz y Música",
+    descripcion: "Modelos que sintetizan, clonan y componen voz humana, música completa y paisajes sonoros con calidad broadcast y control expresivo de emoción.",
+    colorBase:  [0.98, 0.78, 0.68],
+    colorFlash: [1.0,  0.90, 0.80],
+    subherramientas: [
+      { nombre: "Suno AI",       empresa: "Suno Inc.",   descripcion: "Generación completa de canciones con letra, melodía y voces realistas.",                              puntuacion: 4.8, rendimiento: 95, rapidez: 85, precio:  8 },
+      { nombre: "Udio",          empresa: "Udio",        descripcion: "Creación musical premium con texturas analógicas y voces con calidad de estudio.",                    puntuacion: 4.7, rendimiento: 93, rapidez: 80, precio: 10 },
+      { nombre: "ElevenLabs",    empresa: "ElevenLabs",  descripcion: "La herramienta líder en clonación de voz y síntesis de voz hiperrealista.",                          puntuacion: 4.9, rendimiento: 96, rapidez: 92, precio:  5 },
+      { nombre: "Adobe Podcast", empresa: "Adobe",       descripcion: "Filtro inteligente que transforma audios grabados con móviles en calidad de estudio.",                puntuacion: 4.5, rendimiento: 89, rapidez: 95, precio:  0 },
+      { nombre: "VoiceMod",      empresa: "VoiceMod",    descripcion: "Modulador y cambiador de voz en tiempo real enfocado a streamers y gamers.",                         puntuacion: 4.3, rendimiento: 84, rapidez: 98, precio:  0 },
+      { nombre: "Spleeter",      empresa: "Deezer",      descripcion: "Herramienta de IA para separar pistas de canciones (voces, batería, piano) en segundos.",            puntuacion: 4.4, rendimiento: 86, rapidez: 90, precio:  0 },
+      { nombre: "Descript",      empresa: "Descript",    descripcion: "Editor de audio avanzado que permite editar podcasts editando el texto transcrito.",                  puntuacion: 4.6, rendimiento: 90, rapidez: 87, precio: 12 },
+      { nombre: "AIVA",          empresa: "AIVA",        descripcion: "Compositor de bandas sonoras y música ambiental instrumental sin derechos de autor.",                 puntuacion: 4.2, rendimiento: 81, rapidez: 84, precio:  0 }
+    ]
+  },
+  {
+    id: "#04",
+    nombre: "Texto y Productividad",
+    descripcion: "Grandes modelos de lenguaje para razonamiento profundo, redacción profesional, análisis documental masivo y automatización de flujos cognitivos.",
+    colorBase:  [0.75, 0.95, 0.82],
+    colorFlash: [0.92, 1.0,  0.95],
+    subherramientas: [
+      { nombre: "ChatGPT Plus",            empresa: "OpenAI",       descripcion: "El chatbot conversacional más avanzado impulsado por el motor GPT-4o.",                         puntuacion: 4.9, rendimiento: 96, rapidez: 94, precio: 20 },
+      { nombre: "Claude 3.5 Sonnet",       empresa: "Anthropic",    descripcion: "Líder en razonamiento complejo, redacción literaria de alto nivel y lógica.",                    puntuacion: 4.9, rendimiento: 98, rapidez: 92, precio: 20 },
+      { nombre: "Google Gemini Advanced",  empresa: "Google",       descripcion: "Excelente integración con el ecosistema de Google Docs, Drive y Gmail.",                         puntuacion: 4.6, rendimiento: 90, rapidez: 95, precio: 20 },
+      { nombre: "Perplexity AI",           empresa: "Perplexity",   descripcion: "Buscador conversacional en tiempo real que cita fuentes fiables de internet.",                   puntuacion: 4.8, rendimiento: 94, rapidez: 91, precio: 20 },
+      { nombre: "Notion AI",              empresa: "Notion",        descripcion: "Asistente de redacción, síntesis y resúmenes integrado en tus páginas de notas.",                puntuacion: 4.5, rendimiento: 88, rapidez: 89, precio: 10 },
+      { nombre: "DeepL Write",            empresa: "DeepL",         descripcion: "Corrector estilístico y gramatical avanzado para redacción profesional multinacional.",          puntuacion: 4.6, rendimiento: 92, rapidez: 97, precio:  0 },
+      { nombre: "v0 by Vercel",           empresa: "Vercel",        descripcion: "Generador automático de interfaces frontend a partir de simples instrucciones de texto.",        puntuacion: 4.8, rendimiento: 95, rapidez: 93, precio:  0 },
+      { nombre: "Grammarly",              empresa: "Grammarly Inc", descripcion: "Asistente inteligente de ortografía, tono y gramática en tiempo real.",                          puntuacion: 4.4, rendimiento: 86, rapidez: 96, precio: 12 }
+    ]
+  },
+  {
+    id: "#05",
+    nombre: "Salud, Bienestar y Fitness",
+    descripcion: "Sistemas IA aplicados a diagnóstico preventivo, planes de entrenamiento personalizados, nutrición adaptativa y acompañamiento de salud mental.",
+    colorBase:  [0.88, 0.95, 0.78],
+    colorFlash: [1.0,  0.97, 0.88],
+    subherramientas: [
+      { nombre: "Whoop AI",        empresa: "Whoop",         descripcion: "Entrenador de salud que analiza datos biométricos de sueño, estrés y recuperación.",               puntuacion: 4.7, rendimiento: 92, rapidez: 94, precio: 30 },
+      { nombre: "MyFitnessPal AI", empresa: "MyFitnessPal", descripcion: "Asistente para escaneo de comidas por cámara y cálculo predictivo de macros.",                     puntuacion: 4.3, rendimiento: 85, rapidez: 91, precio: 10 },
+      { nombre: "Ada Health",      empresa: "Ada Health",    descripcion: "Diagnóstico preliminar de síntomas médicos certificado para orientación de salud.",                 puntuacion: 4.5, rendimiento: 89, rapidez: 88, precio:  0 },
+      { nombre: "Healbe",          empresa: "Healbe Corp",   descripcion: "Algoritmos avanzados para la medición no invasiva de ingesta de calorías por la piel.",            puntuacion: 4.1, rendimiento: 80, rapidez: 82, precio:  0 },
+      { nombre: "Zorbi",           empresa: "Zorbi",         descripcion: "Generación de tarjetas de memorización inteligentes espaciadas para estudiantes de medicina.",      puntuacion: 4.4, rendimiento: 86, rapidez: 90, precio:  0 },
+      { nombre: "Fitbod",          empresa: "Fitbod Inc.",   descripcion: "Diseñador de rutinas de gimnasio personalizadas basadas en fatiga muscular real.",                  puntuacion: 4.6, rendimiento: 90, rapidez: 87, precio: 13 },
+      { nombre: "Foodvisor",       empresa: "Foodvisor",     descripcion: "Reconocimiento visual instantáneo de calorías y análisis nutricional de platos.",                   puntuacion: 4.2, rendimiento: 83, rapidez: 89, precio:  8 },
+      { nombre: "Sleep Cycle AI",  empresa: "Sleep Cycle",   descripcion: "Análisis de patrones de sueño por sonido y despertador inteligente optimizado.",                   puntuacion: 4.4, rendimiento: 87, rapidez: 93, precio:  0 }
+    ]
+  },
+  {
+    id: "#06",
+    nombre: "Programación e Ingeniería",
+    descripcion: "Asistentes de código integrados en el IDE que autocompletan, refactorizan, depuran y generan software completo a partir de instrucciones en lenguaje natural.",
+    colorBase:  [0.85, 0.89, 0.94],
+    colorFlash: [0.94, 0.96, 0.98],
+    subherramientas: [
+      { nombre: "GitHub Copilot", empresa: "GitHub / Microsoft", descripcion: "El autocompletado y generador de código en tiempo real estándar de la industria.",               puntuacion: 4.8, rendimiento: 94, rapidez: 95, precio: 10 },
+      { nombre: "Cursor",         empresa: "Anysphere",          descripcion: "Editor de código entero nacido nativamente para integrarse con modelos de lenguaje.",            puntuacion: 4.9, rendimiento: 97, rapidez: 94, precio: 20 },
+      { nombre: "Tabnine",        empresa: "Tabnine",            descripcion: "Autocompletado de código local privado ideal para entornos de desarrollo empresarial.",          puntuacion: 4.3, rendimiento: 84, rapidez: 96, precio: 15 },
+      { nombre: "Amazon Q",       empresa: "Amazon",             descripcion: "Asistente especializado en la optimización y despliegues de infraestructuras en AWS.",           puntuacion: 4.5, rendimiento: 88, rapidez: 87, precio: 19 },
+      { nombre: "Blackbox AI",    empresa: "Blackbox",           descripcion: "Buscador de fragmentos de código ultrarrápido y ejecutor de código en terminal.",               puntuacion: 4.4, rendimiento: 86, rapidez: 93, precio:  0 },
+      { nombre: "Replit Agent",   empresa: "Replit",             descripcion: "Agente autónomo capaz de construir, configurar y desplegar aplicaciones web completas.",         puntuacion: 4.7, rendimiento: 92, rapidez: 85, precio: 15 },
+      { nombre: "Phind",          empresa: "Phind",              descripcion: "Buscador y optimizador de código enfocado a resolver bugs de StackOverflow.",                    puntuacion: 4.6, rendimiento: 90, rapidez: 91, precio:  0 },
+      { nombre: "Codeium",        empresa: "Codeium",            descripcion: "Alternativa potente de autocompletado de código corporativo 100% gratuita.",                    puntuacion: 4.5, rendimiento: 89, rapidez: 94, precio:  0 }
+    ]
+  },
+  {
+    id: "#07",
+    nombre: "Negocios y Marketing",
+    descripcion: "Plataformas de IA para automatización de CRM, generación de contenido de conversión, análisis de datos de negocio y estrategia de marketing a escala.",
+    colorBase:  [0.99, 0.93, 0.76],
+    colorFlash: [1.0,  0.98, 0.90],
+    subherramientas: [
+      { nombre: "HubSpot AI",    empresa: "HubSpot",      descripcion: "Automatización de flujos de venta, redacción de correos y análisis de leads CRM.",                     puntuacion: 4.6, rendimiento: 91, rapidez: 89, precio:  50 },
+      { nombre: "Jasper AI",     empresa: "Jasper",       descripcion: "Plataforma corporativa de copywriting y campañas SEO optimizadas para marcas.",                        puntuacion: 4.5, rendimiento: 89, rapidez: 91, precio:  39 },
+      { nombre: "Albert.ai",     empresa: "Albert",       descripcion: "Optimización y compra automatizada de campañas publicitarias en Meta y Google Ads.",                   puntuacion: 4.4, rendimiento: 88, rapidez: 85, precio:  99 },
+      { nombre: "Gong.io",       empresa: "Gong",         descripcion: "Analizador de llamadas de ventas para detectar objeciones y patrones de éxito.",                      puntuacion: 4.7, rendimiento: 93, rapidez: 82, precio:  80 },
+      { nombre: "Surfer SEO",    empresa: "Surfer",       descripcion: "Analizador estructural de contenidos para escalar posiciones en el buscador Google.",                  puntuacion: 4.6, rendimiento: 90, rapidez: 88, precio:  29 },
+      { nombre: "Beautiful.ai",  empresa: "Beautiful.ai", descripcion: "Generador automático de presentaciones ejecutivas y diapositivas de negocio.",                         puntuacion: 4.4, rendimiento: 86, rapidez: 92, precio:  12 },
+      { nombre: "Brandmark",     empresa: "Brandmark",    descripcion: "Creador instantáneo de logotipos y sistemas de identidad visual corporativa.",                          puntuacion: 4.1, rendimiento: 81, rapidez: 96, precio:   0 },
+      { nombre: "Reply.io",      empresa: "Reply",        descripcion: "Agente de inteligencia artificial para agendar reuniones y prospección fría.",                          puntuacion: 4.5, rendimiento: 88, rapidez: 87, precio:  29 }
+    ]
+  },
+  {
+    id: "#08",
+    nombre: "Aprendizaje y Educación",
+    descripcion: "Tutores inteligentes, sistemas de revisión académica, plataformas de idiomas y herramientas de estudio adaptativo que personalizan el aprendizaje a cada persona.",
+    colorBase:  [0.80, 0.88, 0.97],
+    colorFlash: [0.92, 0.94, 1.0],
+    subherramientas: [
+      { nombre: "Duolingo Max",       empresa: "Duolingo",     descripcion: "Explicaciones gramaticales personalizadas e inmersión lingüística por GPT-4.",                    puntuacion: 4.6, rendimiento: 91, rapidez: 95, precio: 14 },
+      { nombre: "QuillBot",           empresa: "QuillBot",     descripcion: "Parafraseador y reescritor de ensayos académicos para mejorar la fluidez.",                       puntuacion: 4.5, rendimiento: 89, rapidez: 97, precio:  0 },
+      { nombre: "Consensus",          empresa: "Consensus",    descripcion: "Buscador científico que extrae conclusiones basadas en papers indexados de medicina.",             puntuacion: 4.8, rendimiento: 95, rapidez: 90, precio:  0 },
+      { nombre: "Khanmigo",           empresa: "Khan Academy", descripcion: "Tutor virtual personalizado que guía al estudiante paso a paso sin darle la solución.",           puntuacion: 4.7, rendimiento: 93, rapidez: 88, precio:  4 },
+      { nombre: "AnkiDroid",          empresa: "Anki",         descripcion: "Repetición espaciada potenciada por algoritmos para recordar conceptos a largo plazo.",           puntuacion: 4.3, rendimiento: 85, rapidez: 91, precio:  0 },
+      { nombre: "ChatPDF",            empresa: "ChatPDF",      descripcion: "Asistente de lectura que resume y responde preguntas sobre libros o tesis en PDF.",               puntuacion: 4.5, rendimiento: 88, rapidez: 94, precio:  0 },
+      { nombre: "WolframAlpha",       empresa: "Wolfram",      descripcion: "Motor de conocimiento computacional para resolver matemáticas complejas y físicas.",               puntuacion: 4.7, rendimiento: 94, rapidez: 89, precio:  0 },
+      { nombre: "Synthesia Academy",  empresa: "Synthesia",    descripcion: "Generador de módulos educativos e e-learning automatizado para empresas.",                        puntuacion: 4.4, rendimiento: 86, rapidez: 85, precio: 30 }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   ①B BASE DE DATOS DE FICHAS TÉCNICAS — 64 HERRAMIENTAS (vista detalle)
+══════════════════════════════════════════════════════════════════ */
+const IA_FICHAS_DATABASE = [
+  // --- IMAGEN Y ARTE GENERATIVO ---
+  { categoria: "Imagen y Arte Generativo", nombre: "Midjourney", empresa: "Midjourney Inc.", descripcion: "Esta plataforma de vanguardia lidera el sector de la ilustración sintética transformando descripciones textuales complejas en obras de arte visual con un fotorrealismo impactante. Destaca por su impecable manejo de la iluminación cinematográfica, texturas hiperdetalladas y una sensibilidad estética inigualable que domina desde retratos íntimos hasta paisajes futuristas sobrecogedores.", idealPara: "Dirección de arte conceptual, diseño de producción visual avanzada y renderizado hiperrealista de alta fidelidad estética.", puntuacion: 4.9, rendimiento: 96, rapidez: 80, precio: 10, enlace: "https://www.midjourney.com" },
+  { categoria: "Imagen y Arte Generativo", nombre: "DALL-E 3", empresa: "OpenAI", descripcion: "Desarrollado por OpenAI e integrado nativamente en ChatGPT, este motor gráfico destaca por su asombrosa precisión para interpretar instrucciones complejas y estructuradas. Su gran ventaja competitiva radica en la habilidad única para renderizar texto perfectamente legible dentro de las composiciones, respetando proporciones anatómicas, formas geométricas exactas y detalles conceptuales minuciosos.", idealPara: "Creación de material publicitario ágil, branding corporativo, diseño comercial e ilustraciones con tipografía integrada.", puntuacion: 4.7, rendimiento: 92, rapidez: 88, precio: 20, enlace: "https://openai.com/dall-e-3" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Stable Diffusion XL", empresa: "Stability AI", descripcion: "Este potentísimo modelo de código abierto redefine la autonomía creativa ofreciendo un control absoluto sobre el proceso de generación de imágenes. Al permitir su instalación local y el entrenamiento personalizado mediante LoRAs o ControlNet, los creadores pueden manipular poses, estructurar composiciones exactas y mantener una consistencia de personajes impecable sin restricciones.", idealPara: "Desarrolladores independientes, artistas técnicos que buscan personalización extrema y control total del pipeline gráfico.", puntuacion: 4.6, rendimiento: 90, rapidez: 75, precio: 0, enlace: "https://stability.ai" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Adobe Firefly", empresa: "Adobe", descripcion: "Integrado en la suite profesional de Adobe, este generador destaca por haber sido entrenado exclusivamente con imágenes de stock con licencia legítima y contenido de dominio público. Esta aproximación ética garantiza que cualquier pieza generada sea completamente segura para su uso comercial masivo, integrándose de forma fluida con herramientas clásicas.", idealPara: "Diseñadores corporativos, agencias de publicidad exigentes y flujos de trabajo profesionales orientados al mercado comercial legal.", puntuacion: 4.5, rendimiento: 88, rapidez: 85, precio: 5, enlace: "https://www.adobe.com/firefly" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Canva Magic Design", empresa: "Canva", descripcion: "Una suite ágil orientada a la democratización del diseño que automatiza la creación de composiciones gráficas completas a partir de conceptos textuales simples. En cuestión de segundos, genera plantillas editables, distribuye textos corporativos de forma armónica y selecciona paletas cromáticas optimizadas para redes sociales, acelerando radicalmente la producción de contenido visual.", idealPara: "Creadores de contenido, equipos de marketing digital rápidos y emprendedores que necesitan piezas gráficas atractivas de inmediato.", puntuacion: 4.2, rendimiento: 80, rapidez: 90, precio: 0, enlace: "https://www.canva.com" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Leonardo.ai", empresa: "Leonardo Interactive", descripcion: "Plataforma premium especializada en la generación de assets artísticos recurrentes y texturas complejas de alta resolución. Su entorno intuitivo permite a los desarrolladores entrenar modelos propios de forma rápida y utilizar herramientas avanzadas de pintura en lienzo (Inpainting y Outpainting), consolidándose como un aliado indispensable en fases de preproducción creativa.", idealPara: "Diseño de videojuegos, concept art recurrente, modelado conceptual de personajes y creación de texturas complejas.", puntuacion: 4.6, rendimiento: 89, rapidez: 82, precio: 0, enlace: "https://leonardo.ai" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Magnific AI", empresa: "Magnific", descripcion: "Herramienta de reescalado y optimización que utiliza inteligencia artificial generativa para reimaginar y enriquecer imágenes de baja resolución. A diferencia de los métodos de interpolación tradicionales, este software añade detalles realistas, microtexturas en la piel, reflejos coherentes y una nitidez impresionante, transformando bocetos o renders simples en piezas cinematográficas definitivas.", idealPara: "Fotógrafos profesionales, artistas digitales avanzados y estudios de animación que buscan un acabado ultra-detallado premium.", puntuacion: 4.8, rendimiento: 95, rapidez: 70, precio: 39, enlace: "https://magnific.ai" },
+  { categoria: "Imagen y Arte Generativo", nombre: "Photoroom", empresa: "Photoroom", descripcion: "Especialista absoluto en el procesamiento automatizado de imágenes comerciales enfocado al comercio electrónico. Su algoritmo elimina fondos complejos de manera instantánea con precisión impecable, promedia sombras realistas basadas en la geometría del objeto y sustituye entornos de manera inteligente, agilizando la catalogación masiva de productos de forma muy profesional.", idealPara: "E-commerce, vendedores digitales, fotografía de producto masiva y optimización visual de escaparates web.", puntuacion: 4.4, rendimiento: 85, rapidez: 92, precio: 10, enlace: "https://www.photoroom.com" },
+
+  // --- VÍDEO Y ANIMACIÓN CINEMÁTICA ---
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Runway Gen-3", empresa: "Runway", descripcion: "Este generador cinematográfico de texto e imagen a vídeo marca un hito en la simulación física digital. Capaz de interpretar dinámicas complejas de fluidos, colisiones, movimientos de cámara cinemáticos y expresiones humanas realistas, permite a los directores independientes estructurar metraje de alta fidelidad visual con un control de dirección temporal extraordinario.", idealPara: "Cineastas independientes, producción de videoclips artísticos, VFX conceptuales y generación de metraje comercial de alta gama.", puntuacion: 4.8, rendimiento: 94, rapidez: 75, precio: 12, enlace: "https://runwayml.com" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Sora", empresa: "OpenAI", descripcion: "El revolucionario modelo de OpenAI destaca por su capacidad única de comprender y simular las complejas leyes físicas del mundo real en movimiento. Genera escenas complejas de hasta un minuto de duración con múltiples personajes detallados, movimientos de cámara dinámicos y una consistencia de fondo e iluminación espacial verdaderamente fotorealista.", idealPara: "Producción audiovisual de gran formato, simulación hiperrealista de entornos tridimensionales y storytelling cinemático avanzado.", puntuacion: 4.9, rendimiento: 97, rapidez: 65, precio: 25, enlace: "https://openai.com/sora" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Luma Dream Machine", empresa: "Luma Labs", descripcion: "Un motor de generación de vídeo de alta velocidad diseñado para procesar tomas con movimientos fluidos y cinemáticos a partir de instrucciones simples. Destaca por mantener una excelente coherencia en la acción y en las geometrías de los objetos durante transiciones rápidas de cámara, minimizando las distorsiones visuales comunes del sector.", idealPara: "Generación rápida de recursos en vídeo, prototipado de escenas en alta definición y motion graphics ágiles.", puntuacion: 4.6, rendimiento: 88, rapidez: 80, precio: 0, enlace: "https://lumalabs.ai/dream-machine" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Pika 2.0", empresa: "Pika Labs", descripcion: "Herramienta altamente interactiva centrada en la edición y animación precisa de elementos específicos dentro de un vídeo. Su interfaz permite aplicar efectos especiales inverosímiles a objetos estáticos, modificar vestuarios en movimiento mediante pinceles inteligentes y expandir la duración de tomas existentes con físicas intuitivas, fomentando una experimentación lúdica profesional.", idealPara: "Animadores digitales, creadores de memes premium, efectos especiales rápidos y edición granular de vídeo comercial.", puntuacion: 4.4, rendimiento: 85, rapidez: 85, precio: 0, enlace: "https://pika.art" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "HeyGen", empresa: "HeyGen", descripcion: "Plataforma líder en la creación de avatares corporativos hiperrealistas capaces de locutar textos complejos en múltiples idiomas con una gesticulación facial asombrosa. Su sistema clona con precisión milimétrica la voz y los ademanes de personas reales, sincronizando los labios perfectamente y permitiendo escalar la producción de vídeo formativo o publicitario global.", idealPara: "Equipos de recursos humanos, departamentos de marketing global, video-tutoriales a gran escala y portavoces automatizados.", puntuacion: 4.7, rendimiento: 93, rapidez: 90, precio: 24, enlace: "https://www.heygen.com" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Synthesia", empresa: "Synthesia", descripcion: "La plataforma de vídeo corporativo de nivel empresarial más extendida del mercado global. Permite transformar guiones planos de texto en presentaciones audiovisuales dinámicas protagonizadas por avatares fotorrealistas en más de cien idiomas, eliminando por completo los costes de filmación tradicionales, contratación de actores, alquiler de estudios o edición posterior.", idealPara: "Formación interna empresarial, corporativos multinacionales y localización masiva de contenido de soporte o ventas.", puntuacion: 4.6, rendimiento: 91, rapidez: 88, precio: 22, enlace: "https://www.synthesia.io" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "Kling AI", empresa: "Kuaishou", descripcion: "Un potente modelo capaz de generar vídeos largos con una notable fluidez en los movimientos de las articulaciones humanas y las interacciones físicas con el entorno. Su arquitectura avanzada procesa tomas de alta resolución que sostienen la continuidad estética de manera eficiente, facilitando la creación de narrativas más extensas y complejas.", idealPara: "Narrativas visuales extendidas, creadores audiovisuales digitales y animación de personajes con físicas humanas coherentes.", puntuacion: 4.5, rendimiento: 87, rapidez: 70, precio: 0, enlace: "https://klingai.com" },
+  { categoria: "Vídeo y Animación Cinematicas", nombre: "CapCut AI", empresa: "ByteDance", descripcion: "Esta herramienta automatiza la fase de postproducción de vídeo para formatos verticales mediante algoritmos inteligentes de edición. Genera subtítulos dinámicos estilizados con precisión fonética, elimina ruidos de fondo, estabiliza tomas movidas y aplica transiciones rítmicas automáticas de forma óptima, acelerando la publicación diaria de vídeos de alto impacto masivo.", idealPara: "TikTokers, Reels, creadores de contenido vertical diario y edición móvil ultrarrápida y profesional.", puntuacion: 4.3, rendimiento: 82, rapidez: 93, precio: 0, enlace: "https://www.capcut.com" },
+
+  // --- AUDIO, VOZ Y MÚSICA ---
+  { categoria: "Audio, Voz y Música", nombre: "Suno AI", empresa: "Suno Inc.", descripcion: "Un impresionante sistema compositivo capaz de estructurar piezas musicales completas con arreglos instrumentales complejos, letras poéticas y voces asombrosamente emotivas a partir de una idea temática. Domina cualquier género musical imaginable, desde sinfonías orquestales densas hasta producciones de música electrónica contemporánea listas para radiodifusión.", idealPara: "Composición de canciones personalizadas, creadores de contenido, jingles rápidos y exploración de maquetas musicales conceptuales.", puntuacion: 4.8, rendimiento: 95, rapidez: 85, precio: 8, enlace: "https://suno.com" },
+  { categoria: "Audio, Voz y Música", nombre: "Udio", empresa: "Udio", descripcion: "Diseñado con una obsesión por la fidelidad acústica y la calidez analógica, este generador musical destaca por la riqueza interpretativa de sus voces y la sofisticación de sus mezclas de audio. Permite extender pistas de forma indefinida introduciendo secciones específicas como solos de guitarra, puentes armónicos o estribillos pegadizos con precisión.", idealPara: "Productores musicales en busca de inspiración, bandas sonoras de alta fidelidad y experimentación estilística premium.", puntuacion: 4.7, rendimiento: 93, rapidez: 80, precio: 10, enlace: "https://www.udio.com" },
+  { categoria: "Audio, Voz y Música", nombre: "ElevenLabs", empresa: "ElevenLabs", descripcion: "La plataforma de síntesis y clonación de voz más avanzada de la industria global. Su algoritmo captura la esencia fonética, la entonación emocional, los suspiros y las pausas dramáticas de cualquier voz humana en segundos, permitiendo locutar textos en decenas de idiomas manteniendo la identidad vocal del hablante original con total naturalidad.", idealPara: "Audiolibros profesionales, doblaje internacional de vídeos, narración de videojuegos y accesibilidad vocal avanzada.", puntuacion: 4.9, rendimiento: 96, rapidez: 92, precio: 5, enlace: "https://elevenlabs.io" },
+  { categoria: "Audio, Voz y Música", nombre: "Adobe Podcast", empresa: "Adobe", descripcion: "Una herramienta web de restauración acústica que transforma grabaciones deficientes plagadas de eco, reverberación de sala y ruido ambiental en archivos de audio cristalinos con calidad de estudio profesional. Su algoritmo analiza el habla de forma inteligente, reconstruyendo frecuencias perdidas y aislando la voz como si hubiera sido registrada en un entorno insonorizado.", idealPara: "Podcasters independientes, periodistas de campo, creadores de vídeo móvil y limpieza rápida de locuciones domésticas.", puntuacion: 4.5, rendimiento: 89, rapidez: 95, precio: 0, enlace: "https://podcast.adobe.com" },
+  { categoria: "Audio, Voz y Música", nombre: "VoiceMod", empresa: "VoiceMod", descripcion: "Un procesador y modulador de señal de audio en tiempo real diseñado para transformar la identidad vocal al instante con latencia imperceptible. Ofrece un catálogo inmenso de efectos que abarcan desde avatares robóticos y criaturas fantásticas hasta sutiles optimizaciones de ecualización que realzan la presencia de la voz de forma inmediata.", idealPara: "Streamers de Twitch, creadores de contenido en directo, gamers y entretenimiento interactivo online.", puntuacion: 4.3, rendimiento: 84, rapidez: 98, precio: 0, enlace: "https://www.voicemod.net" },
+  { categoria: "Audio, Voz y Música", nombre: "Spleeter", empresa: "Deezer", descripcion: "Desarrollada por los ingenieros de Deezer, esta potente herramienta de código abierto se especializa en la separación de pistas de audio (Stem Separation). Aísla con precisión matemática las voces, la sección rítmica, las líneas de bajo y los instrumentos armónicos de cualquier canción mezclada, entregando archivos individuales limpios de distorsión.", idealPara: "DJs, productores de remixes, ingenieros de sonido y músicos que necesitan aislar pistas para práctica o muestreo.", puntuacion: 4.4, rendimiento: 86, rapidez: 90, precio: 0, enlace: "https://github.com/deezer/spleeter" },
+  { categoria: "Audio, Voz y Música", nombre: "Descript", empresa: "Descript", descripcion: "Una revolucionaria estación de trabajo que unifica la edición de audio y vídeo estructurándola a través de la edición de texto. Al transcribir automáticamente las grabaciones, permite eliminar muletillas, cortar frases enteras o reorganizar el orden de un podcast editando directamente el documento de texto resultante de forma visual e intuitiva.", idealPara: "Editores de podcasts, creadores de vídeo educativo, entrevistas y flujos de trabajo basados en transcripción ágil.", puntuacion: 4.6, rendimiento: 90, rapidez: 87, precio: 12, enlace: "https://www.descript.com" },
+  { categoria: "Audio, Voz y Música", nombre: "AIVA", empresa: "AIVA", descripcion: "Un sofisticado compositor de inteligencia artificial especializado en la creación de partituras y bandas sonoras instrumentales sin derechos de autor. Su motor comprende las complejas reglas de la teoría musical clásica y contemporánea, permitiendo generar composiciones épicas, melancólicas o corporativas totalmente personalizables en formato MIDI o audio de alta calidad.", idealPara: "Desarrolladores de videojuegos, creadores independientes de contenido y agencias que necesitan música de fondo ambiental libre de regalías.", puntuacion: 4.2, rendimiento: 81, rapidez: 84, precio: 0, enlace: "https://www.aiva.ai" },
+
+  // --- TEXTO Y PRODUCTIVIDAD ---
+  { categoria: "Texto y Productividad", nombre: "ChatGPT Plus", empresa: "OpenAI", descripcion: "El asistente conversacional estándar de la industria global impulsado por el vanguardista modelo GPT-4o. Sobresale por su versatilidad analítica multidominio, permitiendo automatizar flujos de trabajo creativos complejos, programar código depurado en tiempo real, realizar análisis estadísticos avanzados de bases de datos y resolver problemas lógicos con una agilidad intelectual asombrosa.", idealPara: "Consultoría general ágil, automatización de tareas administrativas, programación de software y asistencia cognitiva continua.", puntuacion: 4.9, rendimiento: 96, rapidez: 94, precio: 20, enlace: "https://chatgpt.com" },
+  { categoria: "Texto y Productividad", nombre: "Claude 3.5 Sonnet", empresa: "Anthropic", descripcion: "La obra maestra conversacional de Anthropic, reconocida internacionalmente como el líder indiscutible en razonamiento lógico abstracto, redacción literaria de alto nivel y comprensión de código. Destaca por mantener un tono humano matizado, redactar con una coherencia estilística impecable y resolver problemas de ingeniería complejos con un rigor académico excepcional.", idealPara: "Auditoría de código, redacción literaria y comercial premium, análisis profundo de documentos densos y resolución de problemas abstractos.", puntuacion: 4.9, rendimiento: 98, rapidez: 92, precio: 20, enlace: "https://claude.ai" },
+  { categoria: "Texto y Productividad", nombre: "Google Gemini Advanced", empresa: "Google", descripcion: "El potente motor multimodal de Google integrado de forma orgánica en todo su ecosistema productivo. Su gran fortaleza radica en su acceso directo y fluido a las herramientas de Google Workspace (Docs, Drive, Gmail), permitiendo organizar agendas, redactar resúmenes ejecutivos masivos y procesar información en la nube con una velocidad y comodidad operativa líderes.", idealPara: "Usuarios del ecosistema Google, síntesis de datos en Drive, automatización de correos y flujos colaborativos en la nube.", puntuacion: 4.6, rendimiento: 90, rapidez: 95, precio: 20, enlace: "https://gemini.google.com" },
+  { categoria: "Texto y Productividad", nombre: "Perplexity AI", empresa: "Perplexity", descripcion: "Este buscador conversacional redefine por completo la experiencia de investigación en internet. En lugar de ofrecer enlaces planos, analiza la web en tiempo real, sintetiza las respuestas directamente y aporta citas bibliográficas numeradas de fuentes fiables, garantizando una transparencia absoluta y eliminando las molestas alucinaciones de datos comunes del sector.", idealPara: "Investigadores, periodistas, estudiantes y profesionales que exigen respuestas raíces basadas estrictamente en fuentes de internet verificadas.", puntuacion: 4.8, rendimiento: 94, rapidez: 91, precio: 20, enlace: "https://www.perplexity.ai" },
+  { categoria: "Texto y Productividad", nombre: "Notion AI", empresa: "Notion", descripcion: "Un asistente productivo integrado directamente dentro de tus páginas de notas y espacios de trabajo colaborativos. Permite resumir actas de reuniones extensas de manera instantánea, cambiar el tono de documentos corporativos, extraer planes de acción estructurados a partir de lluvias de ideas caóticas y corregir borradores sobre la marcha sin cambiar de aplicación.", idealPara: "Gestión de proyectos, organización de conocimiento interno de empresas, redacción de minutas y síntesis de notas colectivas.", puntuacion: 4.5, rendimiento: 88, rapidez: 89, precio: 10, enlace: "https://www.notion.so" },
+  { categoria: "Texto y Productividad", nombre: "DeepL Write", empresa: "DeepL", descripcion: "Un asistente de redacción estilística de alta precisión que perfecciona la comunicación escrita en múltiples idiomas. Más allá de corregir errores ortográficos simples, analiza la estructura gramatical completa del texto para proponer mejoras de vocabulario, variaciones de tono elegantes y giros idiomáticos profesionales que elevan la sofisticación de cualquier comunicación ejecutiva inmediata.", idealPara: "Redacción de correos internacionales, autores académicos, comunicación corporativa bilingüe y perfeccionamiento de estilo escrito.", puntuacion: 4.6, rendimiento: 92, rapidez: 97, precio: 0, enlace: "https://www.deepl.com/write" },
+  { categoria: "Texto y Productividad", nombre: "v0 by Vercel", empresa: "Vercel", descripcion: "Un revolucionario sistema de ingeniería frontend generativa que transforma instrucciones en lenguaje natural en componentes de interfaz web completamente interactivos y limpios. Utilizando Tailwind CSS y React, diseña cuadros de mando sofisticados, pasarelas de pago elegantes y landing pages pulidas listas para ser integradas en entornos de producción reales.", idealPara: "Diseñadores web, desarrolladores frontend rápidos, prototipado de interfaces dinámicas y creación acelerada de maquetas UI corporativas.", puntuacion: 4.8, rendimiento: 95, rapidez: 93, precio: 0, enlace: "https://v0.dev" },
+  { categoria: "Texto y Productividad", nombre: "Grammarly", empresa: "Grammarly Inc", descripcion: "El corrector gramatical y estilístico estándar para entornos profesionales en inglés. Monitoriza la escritura en tiempo real a través de aplicaciones de escritorio y navegadores, analizando no solo la corrección mecánica, sino el impacto comunicativo, la concisión y la adecuación del tono al público objetivo seleccionado, garantizando una presencia profesional intachable.", idealPara: "Profesionales de negocios globales, correspondencia internacional en inglés, redacción académica anglosajona y corrección rápida de estilo.", puntuacion: 4.4, rendimiento: 86, rapidez: 96, precio: 12, enlace: "https://www.grammarly.com" },
+
+  // --- SALUD, BIENESTAR Y FITNESS ---
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Whoop AI", empresa: "Whoop", descripcion: "Un sofisticado entrenador de salud digital vinculado a un dispositivo wearable de alta precisión biométrica. Analiza continuamente la variabilidad de la frecuencia cardíaca, los estadios del sueño y los niveles de estrés diario para ofrecer recomendaciones altamente personalizadas sobre la carga de entrenamiento óptima y las estrategias de recuperación celular requeridas.", idealPara: "Atletas de rendimiento, biohacking, optimización del descanso y monitorización metabólica continua avanzada.", puntuacion: 4.7, rendimiento: 92, rapidez: 94, precio: 30, enlace: "https://www.whoop.com" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "MyFitnessPal AI", empresa: "MyFitnessPal", descripcion: "Esta plataforma de nutrición integra algoritmos de reconocimiento visual avanzados para el control dietético diario. Permite escanear platos completos de comida a través de la cámara del teléfono móvil, identificando ingredientes, estimando porciones y calculando los macronutrientes predictivos de forma instantánea para registrar hábitos alimentarios de manera cómoda y precisa.", idealPara: "Control calórico, optimización de ingesta de macronutrientes, planes de pérdida o ganancia de peso estructurados.", puntuacion: 4.3, rendimiento: 85, rapidez: 91, precio: 10, enlace: "https://www.myfitnesspal.com" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Ada Health", empresa: "Ada Health", descripcion: "Una plataforma de evaluación sintomática validada clínicamente que actúa como un triaje médico preventivo de alta fiabilidad. A través de un cuestionario interactivo inteligente adaptado a las respuestas del usuario, analiza probabilidades diagnósticas contrastadas con una base médica masiva, ofreciendo orientación clara sobre qué especialista consultar de forma segura.", idealPara: "Triaje preventivo de síntomas, consulta médica preliminar y orientación informada sobre la salud del hogar.", puntuacion: 4.5, rendimiento: 89, rapidez: 88, precio: 0, enlace: "https://ada.com" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Healbe", empresa: "Healbe Corp", descripcion: "Un ecosistema tecnológico wearable pionero en la medición no invasiva de la ingesta calórica a través de la piel. Mediante sensores de impedancia que monitorizan los flujos de glucosa en el tejido celular, estima de forma automática la energía consumida y el nivel de hidratación del cuerpo, aportando datos metabólicos únicos y automatizados.", idealPara: "Monitorización metabólica automática, control pasivo de hidratación y seguimiento calórico sin registros manuales.", puntuacion: 4.1, rendimiento: 80, rapidez: 82, precio: 0, enlace: "https://healbe.com" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Zorbi", empresa: "Zorbi", descripcion: "Un sistema de memorización acelerada diseñado para estudiantes de disciplinas de alta densidad conceptual, como la medicina. Utiliza inteligencia artificial para predecir el momento exacto en que el cerebro olvidará un concepto, programando repeticiones espaciadas estratégicas que consolidan el conocimiento en la memoria de largo plazo con un esfuerzo optimizado.", idealPara: "Estudiantes de medicina, memorización de terminología compleja, oposiciones y aprendizaje acelerado a largo plazo.", puntuacion: 4.4, rendimiento: 86, rapidez: 90, precio: 0, enlace: "https://zorbi.cards" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Fitbod", empresa: "Fitbod Inc.", descripcion: "Un entrenador de fuerza inteligente que diseña planes de musculación personalizados basados en el análisis real de la fatiga muscular acumulada. Evalúa los entrenamientos pasados para determinar qué grupos musculares se han recuperado por completo, ajustando las series, repeticiones y pesos de la siguiente sesión para optimizar la hipertrofia de forma segura.", idealPara: "Entrenamiento en gimnasio optimizado, prevención de lesiones por sobreentrenamiento y planificación de fuerza personalizada.", puntuacion: 4.6, rendimiento: 90, rapidez: 87, precio: 13, enlace: "https://fitbod.me" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Foodvisor", empresa: "Foodvisor", descripcion: "Una aplicación de bienestar y nutrición enfocada en la sencillez visual para el análisis dietético. Su potente visión por computador identifica al instante las calorías y propiedades nutricionales de los alimentos presentes en una fotografía, complementando el registro con el asesoramiento interactivo de nutricionistas digitales para consolidar hábitos saludables sostenibles.", idealPara: "Educación nutricional visual, registro rápido de comidas y adopción guiada de hábitos de alimentación saludables.", puntuacion: 4.2, rendimiento: 83, rapidez: 89, precio: 8, enlace: "https://www.foodvisor.io" },
+  { categoria: "Salud, Bienestar y Fitness", nombre: "Sleep Cycle AI", empresa: "Sleep Cycle", descripcion: "Un despertador inteligente y analizador de patrones de descanso nocturno basado en acústica avanzada. A través del micrófono del smartphone, monitoriza la respiración, detecta ronquidos e identifica las fases del sueño, activando una alarma suave exclusivamente durante la fase de sueño más ligero para garantizar un despertar enérgico y sin aturdimiento.", idealPara: "Optimización del despertar, diagnóstico preventivo de calidad de descanso y análisis de perturbaciones sonoras nocturnas.", puntuacion: 4.4, rendimiento: 87, rapidez: 93, precio: 0, enlace: "https://www.sleepcycle.com" },
+
+  // --- PROGRAMACIÓN E INGENIERÍA ---
+  { categoria: "Programación e Ingeniería", nombre: "GitHub Copilot", empresa: "GitHub / Microsoft", descripcion: "El asistente de autocompletado y generación de código en tiempo real estandarizado en la industria del desarrollo de software. Integrado directamente en los editores de código principales, predice líneas completas, autocompleta funciones repetitivas y genera fragmentos lógicos complejos a partir de comentarios simples, multiplicando la velocidad de desarrollo de forma sustancial.", idealPara: "Desarrolladores profesionales, refactorización rápida, automatización de código repetitivo y aceleración de escritura de software diaria.", puntuacion: 4.8, rendimiento: 94, rapidez: 95, precio: 10, enlace: "https://github.com/features/copilot" },
+  { categoria: "Programación e Ingeniería", nombre: "Cursor", empresa: "Anysphere", descripcion: "Este revolucionario entorno de desarrollo integrado (IDE) ha sido construido nativamente para fusionar la programación y la inteligencia artificial en un solo flujo de trabajo. Permite auditar repositorios completos de código de forma simultánea, reescribir bloques enteros de software con simples instrucciones textuales y corregir bugs estructurales instantáneamente en la consola.", idealPara: "Ingenieros de software avanzados, desarrollo acelerado de aplicaciones completas y auditoría de grandes repositorios de código.", puntuacion: 4.9, rendimiento: 97, rapidez: 94, precio: 20, enlace: "https://www.cursor.com" },
+  { categoria: "Programación e Ingeniería", nombre: "Tabnine", empresa: "Tabnine", descripcion: "Un asistente de programación avanzado enfocado de forma estricta en la seguridad de los datos corporativos y la privacidad del código fuente. Sus modelos pueden entrenarse y ejecutarse localmente de forma privada en servidores propios, garantizando que ninguna línea de propiedad intelectual confidencial sea transmitida a nubes externas durante el autocompletado.", idealPara: "Entornos bancarios, desarrollo de software corporativo confidencial y empresas con estrictas políticas de privacidad de datos.", puntuacion: 4.3, rendimiento: 84, rapidez: 96, precio: 15, enlace: "https://www.tabnine.com" },
+  { categoria: "Programación e Ingeniería", nombre: "Amazon Q", empresa: "Amazon", descripcion: "El asistente especializado de Amazon diseñado para optimizar y auditar la arquitectura de software desplegada en Amazon Web Services (AWS). Resuelve problemas complejos de configuración de red, diagnostica fallos críticos de seguridad en servidores en la nube y propone optimizaciones de código para reducir drásticamente los costes de computación empresarial.", idealPara: "Ingenieros DevOps, arquitectos de soluciones en la nube de AWS y optimización de costes de infraestructura cloud corporativa.", puntuacion: 4.5, rendimiento: 88, rapidez: 87, precio: 19, enlace: "https://aws.amazon.com/q" },
+  { categoria: "Programación e Ingeniería", nombre: "Blackbox AI", empresa: "Blackbox", descripcion: "Un buscador de fragmentos de código ultrarrápido diseñado para agilizar la integración de soluciones técnicas. Destaca por su capacidad para extraer código funcional a partir de vídeos explicativos de YouTube o imágenes de documentación mediante visión artificial, inyectando la sintaxis limpia directamente en el terminal de desarrollo de manera automática.", idealPara: "Desarrolladores frontend rápidos, aprendizaje técnico mediante videotutoriales e integración ágil de APIs de internet.", puntuacion: 4.4, rendimiento: 86, rapidez: 93, precio: 0, enlace: "https://www.blackbox.ai" },
+  { categoria: "Programación e Ingeniería", nombre: "Replit Agent", empresa: "Replit", descripcion: "Un potente agente autónomo capaz de conceptualizar, programar, configurar las bases de datos y desplegar aplicaciones web completas en internet de manera 100% automatizada. El usuario simplemente introduce la idea del proyecto en lenguaje natural y el agente trabaja en segundo plano gestionando todo el entorno operativo técnico de forma transparente.", idealPara: "Emprendedores no técnicos, creación acelerada de productos mínimos viables (MVP) y prototipado ágil de aplicaciones web.", puntuacion: 4.7, rendimiento: 92, rapidez: 85, precio: 15, enlace: "https://replit.com" },
+  { categoria: "Programación e Ingeniería", nombre: "Phind", empresa: "Phind", descripcion: "Un motor de búsqueda y resolución de dudas técnicas optimizado específicamente para ingenieros de software. A diferencia de los buscadores tradicionales, indexa documentación técnica y foros como StackOverflow en tiempo real para generar explicaciones detalladas y código funcional libre de errores diseñado para solucionar bugs específicos de programación.", idealPara: "Resolución de bugs complejos, aprendizaje ágil de nuevas librerías técnicas y documentación instantánea de software.", puntuacion: 4.6, rendimiento: 90, rapidez: 91, precio: 0, enlace: "https://www.phind.com" },
+  { categoria: "Programación e Ingeniería", nombre: "Codeium", empresa: "Codeium", descripcion: "Una alternativa excepcionalmente robusta y veloz frente a los autocompletados comerciales, destacando por ofrecer un plan individual completamente gratuito y sin restricciones de uso. Ofrece soporte para más de setenta lenguajes de programación con una latencia mínima, garantizando una fluidez extrema en el entorno de desarrollo tradicional del programador.", idealPara: "Estudiantes de programación, desarrolladores independientes y equipos que buscan una solución de IA para código sin coste.", puntuacion: 4.5, rendimiento: 89, rapidez: 94, precio: 0, enlace: "https://codeium.com" },
+
+  // --- NEGOCIOS Y MARKETING ---
+  { categoria: "Negocios y Marketing", nombre: "HubSpot AI", empresa: "HubSpot", descripcion: "Un ecosistema de herramientas inteligentes totalmente integrado en el CRM corporativo estándar. Automatiza con precisión los flujos de cualificación de leads de ventas, redacta correos de prospección comercial adaptados al comportamiento del cliente y analiza grandes volúmenes de interacciones para predecir tendencias de compra y optimizar el rendimiento del equipo de ventas.", idealPara: "Gestión de clientes a gran escala, automatización de ventas B2B y analítica predictiva de marketing corporativo.", puntuacion: 4.6, rendimiento: 91, rapidez: 89, precio: 50, enlace: "https://www.hubspot.com" },
+  { categoria: "Negocios y Marketing", nombre: "Jasper AI", empresa: "Jasper", descripcion: "La plataforma de copywriting corporativo de nivel empresarial más extendida del mercado. Permite entrenar al modelo con la guía de estilo, el tono de voz y el posicionamiento de una marca específica, garantizando que todo el contenido generado para blogs, redes sociales o campañas publicitarias mantenga una coherencia corporativa intachable.", idealPara: "Redactores publicitarios corporativos, agencias de marketing masivo y creación ágil de campañas optimizadas para SEO.", puntuacion: 4.5, rendimiento: 89, rapidez: 91, precio: 39, enlace: "https://www.jasper.ai" },
+  { categoria: "Negocios y Marketing", nombre: "Albert.ai", empresa: "Albert", descripcion: "Un agente de software autónomo especializado en la optimización y compra programática de campañas publicitarias digitales. Analiza de forma constante miles de variables en canales como Meta Ads y Google Ads, redistribuyendo de manera automática el presupuesto hacia las audiencias más rentables para maximizar el retorno de la inversión publicitaria.", idealPara: "E-commerce masivos, gestión automatizada de presupuestos publicitarios elevados y optimización algorítmica de campañas digitales.", puntuacion: 4.4, rendimiento: 88, rapidez: 85, precio: 99, enlace: "https://albert.ai" },
+  { categoria: "Negocios y Marketing", nombre: "Gong.io", empresa: "Gong", descripcion: "Una potente plataforma de Revenue Intelligence que analiza de forma exhaustiva las grabaciones de llamadas de ventas y reuniones comerciales. Identifica con precisión matemática las objeciones recurrentes de los clientes, detecta los patrones de discurso que conducen al cierre exitoso de contratos y alerta sobre riesgos potenciales en negociaciones abiertas.", idealPara: "Auditoría de equipos comerciales, optimización de discursos de venta y previsión de ingresos corporativos fiables.", puntuacion: 4.7, rendimiento: 93, rapidez: 82, precio: 80, enlace: "https://www.gong.io" },
+  { categoria: "Negocios y Marketing", nombre: "Surfer SEO", empresa: "Surfer", descripcion: "Una herramienta analítica estructurada para la planificación y optimización de contenidos enfocados a escalar posiciones en el buscador Google. Compara tu texto en tiempo real con los primeros resultados de la competencia, indicando la cantidad exacta de palabras, densidad de palabras clave y encabezados requeridos para posicionar de forma orgánica.", idealPara: "Especialistas en SEO, redactores digitales, marketing de contenidos orgánico y auditoría web competitiva rápida.", puntuacion: 4.6, rendimiento: 90, rapidez: 88, precio: 29, enlace: "https://surferseo.com" },
+  { categoria: "Negocios y Marketing", nombre: "Beautiful.ai", empresa: "Beautiful.ai", descripcion: "Un generador de presentaciones ejecutivas que aplica de forma automática reglas estrictas de diseño gráfico en tiempo real. Al introducir texto o datos, los elementos, gráficos y tablas se reposicionan e igualan proporcionalmente de manera automática, garantizando diapositivas con un acabado visual corporativo, limpio y profesional en minutos.", idealPara: "Ejecutivos de cuentas, conferenciantes, consultores de negocios y creación acelerada de dossieres comerciales impecables.", puntuacion: 4.4, rendimiento: 86, rapidez: 92, precio: 12, enlace: "https://www.beautiful.ai" },
+  { categoria: "Negocios y Marketing", nombre: "Brandmark", empresa: "Brandmark", descripcion: "Un software especializado en el diseño instantáneo de sistemas de identidad visual e imagotipos corporativos. A partir de conceptos clave de negocio y preferencias cromáticas, genera logotipos limpios y completos acompañados de maquetas realistas sobre papelería, tarjetas de visita y activos digitales para lanzar un negocio al mercado de inmediato.", idealPara: "Emprendedores que lanzan startups rápidas, marcas personales y prototipado inmediato de identidad corporativa visual.", puntuacion: 4.1, rendimiento: 81, rapidez: 96, precio: 0, enlace: "https://brandmark.io" },
+  { categoria: "Negocios y Marketing", nombre: "Reply.io", empresa: "Reply", descripcion: "Un ecosistema de prospección comercial en frío que automatiza la programación de reuniones de ventas mediante agentes de IA. Envía secuencias de correos personalizados multicanal altamente optimizados, responde de forma automática a dudas preliminares de clientes potenciales y agenda citas directamente en el calendario del equipo comercial de forma autónoma.", idealPara: "Generación de leads B2B en frío, agencias de prospección comercial y automatización de agendas comerciales ejecutivas.", puntuacion: 4.5, rendimiento: 88, rapidez: 87, precio: 29, enlace: "https://reply.io" },
+
+  // --- APRENDIZAJE Y EDUCACIÓN ---
+  { categoria: "Aprendizaje y Educación", nombre: "Duolingo Max", empresa: "Duolingo", descripcion: "La vertiente avanzada de la conocida plataforma de idiomas potenciada por GPT-4. Ofrece una inmersión lingüística interactiva mediante dos funciones revolucionarias: 'Explica mi respuesta', que aporta aclaraciones gramaticales personalizadas ante fallos específicos, y 'Juego de rol', que simula diálogos conversacionales adaptativos con personajes virtuales en entornos realistas cotidianos.", idealPara: "Estudiantes independientes de idiomas que buscan práctica conversacional inmersiva y explicaciones gramaticales granulares sin tutores físicos.", puntuacion: 4.6, rendimiento: 91, rapidez: 95, precio: 14, enlace: "https://www.duolingo.com" },
+  { categoria: "Aprendizaje y Educación", nombre: "QuillBot", empresa: "QuillBot", descripcion: "Un sofisticado parafraseador y reescritor de textos optimizado para refinar la fluidez formal de ensayos académicos e informes de investigación. Permite ajustar el tono del texto, reestructurar la sintaxis para evitar repeticiones innecesarias y enriquecer el vocabulario utilizado, garantizando una redacción fluida y profesional que preserva el sentido original.", idealPara: "Escritores académicos, estudiantes universitarios de postgrado y profesionales que perfeccionan el estilo formal de informes extensos.", puntuacion: 4.5, rendimiento: 89, rapidez: 97, precio: 0, enlace: "https://quillbot.com" },
+  { categoria: "Aprendizaje y Educación", nombre: "Consensus", empresa: "Consensus", descripcion: "Un revolucionario motor de búsqueda científica enfocado en aportar conclusiones rigurosas basadas estrictamente en la evidencia de artículos científicos indexados. Al plantear una pregunta, analiza de forma simultánea miles de papers revisados por pares, sintetiza el consenso de la comunidad investigadora y muestra las referencias bibliográficas oficiales transparentes.", idealPara: "Médicos, científicos, investigadores universitarios y profesionales de la salud que exigen información rigurosa basada en evidencia comprobada.", puntuacion: 4.8, rendimiento: 95, rapidez: 90, precio: 0, enlace: "https://consensus.app" },
+  { categoria: "Aprendizaje y Educación", nombre: "Khanmigo", empresa: "Khan Academy", descripcion: "El tutor virtual inteligente desarrollado por Khan Academy que revoluciona la pedagogía digital interactiva. En lugar de limitarse a proporcionar las soluciones directas a los ejercicios, actúa como una guía socrática planteando preguntas analíticas intermedias para que el estudiante deduzca y comprenda el razonamiento lógico matemático o científico por sí mismo.", idealPara: "Educación escolar complementaria, profesores que buscan apoyo pedagógico individualizado y estudiantes de ciencias que valoran la autonomía intelectual.", puntuacion: 4.7, rendimiento: 93, rapidez: 88, precio: 4, enlace: "https://www.khanacademy.org/khanmigo" },
+  { categoria: "Aprendizaje y Educación", nombre: "AnkiDroid", empresa: "Anki", descripcion: "El ecosistema de repetición espaciada multiplataforma definitivo potenciado por algoritmos inteligentes de retención cognitiva. Optimiza la asimilación de conceptos a largo plazo calculando el intervalo óptimo para repasar cada tarjeta de memoria (flashcard) justo antes de que el cerebro olvide la información, maximizando el rendimiento del estudio conceptual complejo.", idealPara: "Memorización masiva a largo plazo, estudiantes de idiomas, opositores públicos y profesionales que asimilan normativas técnicas extensas.", puntuacion: 4.3, rendimiento: 85, rapidez: 91, precio: 0, enlace: "https://apps.ankiweb.net" },
+  { categoria: "Aprendizaje y Educación", nombre: "ChatPDF", empresa: "ChatPDF", descripcion: "Un asistente de lectura interactivo especializado en desglosar y sintetizar la información contenida en documentos y tesis en formato PDF de gran extensión. Permite plantear preguntas conversacionales directas al archivo, localizando de forma instantánea el origen de las respuestas en el texto y redactando resúmenes ejecutivos minuciosos con total fiabilidad.", idealPara: "Análisis rápido de manuales técnicos, estudiantes en fase de revisión bibliográfica y lectura ágil de contratos o tesis corporativas.", puntuacion: 4.5, rendimiento: 88, rapidez: 94, precio: 0, enlace: "https://www.chatpdf.com" },
+  { categoria: "Aprendizaje y Educación", nombre: "WolframAlpha", empresa: "Wolfram", descripcion: "El consolidado motor de conocimiento computacional indispensable para la resolución exacta de problemas matemáticos, físicos y analíticos de alta complejidad. A diferencia de los modelos lingüísticos estándar, calcula los resultados de forma exacta utilizando datos estructurados algorítmicos, desglosando el procedimiento matemático paso a paso con rigor científico absoluto.", idealPara: "Ingenieros, matemáticos, estudiantes de física y profesionales técnicos que exigen cálculos exactos verificados paso a paso.", puntuacion: 4.7, rendimiento: 94, rapidez: 89, precio: 0, enlace: "https://www.wolframalpha.com" },
+  { categoria: "Aprendizaje y Educación", nombre: "Synthesia Academy", empresa: "Synthesia", descripcion: "Un sofisticado sistema educativo automatizado diseñado para la creación acelerada de módulos de formación interna y cursos interactivos de e-learning empresariales. Permite estructurar itinerarios pedagógicos dinámicos guiados por avatares interactivos, localizando el contenido del curso a decenas de mercados globales de manera eficiente y sin costes de producción físicos.", idealPara: "Diseñadores instruccionales corporativos, departamentos de formación empresarial interna y creadores de academias educativas digitales globales.", puntuacion: 4.4, rendimiento: 86, rapidez: 85, precio: 30, enlace: "https://www.synthesia.io/academy" }
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   ② SHADERS — NEBULOSA HERO (instancia Three.js #1)
+══════════════════════════════════════════════════════════════════ */
+const HERO_VERT = /* glsl */`
+  uniform float u_time;
+  uniform float u_amp;
+  uniform vec2  u_mv;
+  uniform float u_sv;
+  varying vec3 vNorm;
+  varying vec3 vPos;
+
+  vec3 _m3(vec3 x){ return x - floor(x*(1./289.))*289.; }
+  vec4 _m4(vec4 x){ return x - floor(x*(1./289.))*289.; }
+  vec4 _p(vec4 x) { return _m4(((x*34.)+1.)*x); }
+  vec4 _t(vec4 r) { return 1.79284291400159 - 0.85373472095314*r; }
+  vec3 _f(vec3 t) { return t*t*t*(t*(t*6.-15.)+10.); }
+
+  float cnoise(vec3 P){
+    vec3 Pi0=floor(P), Pi1=Pi0+1.;
+    Pi0=_m3(Pi0); Pi1=_m3(Pi1);
+    vec3 Pf0=fract(P), Pf1=Pf0-1.;
+    vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x);
+    vec4 iy=vec4(Pi0.y,Pi0.y,Pi1.y,Pi1.y);
+    vec4 iz0=Pi0.zzzz, iz1=Pi1.zzzz;
+    vec4 ixy=_p(_p(ix)+iy);
+    vec4 ixy0=_p(ixy+iz0), ixy1=_p(ixy+iz1);
+    vec4 gx0=ixy0/7., gy0=fract(floor(gx0)/7.)-.5; gx0=fract(gx0);
+    vec4 gz0=.5-abs(gx0)-abs(gy0), sz0=step(gz0,vec4(0.));
+    gx0-=sz0*(step(0.,gx0)-.5); gy0-=sz0*(step(0.,gy0)-.5);
+    vec4 gx1=ixy1/7., gy1=fract(floor(gx1)/7.)-.5; gx1=fract(gx1);
+    vec4 gz1=.5-abs(gx1)-abs(gy1), sz1=step(gz1,vec4(0.));
+    gx1-=sz1*(step(0.,gx1)-.5); gy1-=sz1*(step(0.,gy1)-.5);
+    vec3 g000=vec3(gx0.x,gy0.x,gz0.x), g100=vec3(gx0.y,gy0.y,gz0.y);
+    vec3 g010=vec3(gx0.z,gy0.z,gz0.z), g110=vec3(gx0.w,gy0.w,gz0.w);
+    vec3 g001=vec3(gx1.x,gy1.x,gz1.x), g101=vec3(gx1.y,gy1.y,gz1.y);
+    vec3 g011=vec3(gx1.z,gy1.z,gz1.z), g111=vec3(gx1.w,gy1.w,gz1.w);
+    vec4 n0=_t(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));
+    g000*=n0.x; g010*=n0.y; g100*=n0.z; g110*=n0.w;
+    vec4 n1=_t(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));
+    g001*=n1.x; g011*=n1.y; g101*=n1.z; g111*=n1.w;
+    vec3 f=_f(Pf0);
+    float n00=dot(g000,Pf0), n10=dot(g100,vec3(Pf1.x,Pf0.yz));
+    float n01=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)), n11=dot(g110,vec3(Pf1.xy,Pf0.z));
+    float n002=dot(g001,vec3(Pf0.xy,Pf1.z)), n102=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z));
+    float n012=dot(g011,vec3(Pf0.x,Pf1.yz)), n112=dot(g111,Pf1);
+    vec4 nz=mix(vec4(n00,n10,n01,n11),vec4(n002,n102,n012,n112),f.z);
+    vec2 ny=mix(nz.xy,nz.zw,f.y);
+    return 2.2*mix(ny.x,ny.y,f.x);
+  }
+
+  void main(){
+    vec3 p = position;
+    float mLen = length(u_mv);
+    vec3  mDir = vec3(-u_mv.x, -u_mv.y, 0.);
+    float amp  = u_amp + mLen*0.40 + u_sv*0.30;
+    float n =
+      cnoise(p*1.85 + vec3(u_time*0.36))                       * 0.55 +
+      cnoise(p*3.70 + vec3(u_time*0.58, u_time*0.47, 0.))      * 0.28 +
+      cnoise(p*7.40 + vec3(u_time*0.87))                        * 0.17;
+    float mn = cnoise(p*2.4 + vec3(u_time*0.28) + mDir) * mLen * 0.38;
+    vec3 d = p + normal*(n+mn)*amp;
+    vNorm = normalize(normalMatrix * normal);
+    vPos  = (modelViewMatrix * vec4(d, 1.)).xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(d, 1.);
+  }
+`;
+
+const HERO_FRAG = /* glsl */`
+  varying vec3 vNorm;
+  varying vec3 vPos;
+  uniform float u_time;
+  void main(){
+    vec3 N = normalize(vNorm);
+    vec3 V = normalize(-vPos);
+    vec3 L1 = normalize(vec3( 7., 10.,  8.) - vPos);
+    vec3 L2 = normalize(vec3(-8., -5.,  6.) - vPos);
+    vec3 L3 = normalize(vec3( 0.,-10.,  4.) - vPos);
+    vec3 L4 = normalize(vec3( 4.,  3., -4.) - vPos);
+    vec3 L5 = normalize(vec3(-4.,  8., -2.) - vPos);
+    vec3 L6 = normalize(vec3( 2., -6.,  9.) - vPos);
+    vec3 H1=normalize(L1+V), H2=normalize(L2+V), H3=normalize(L3+V);
+    vec3 H4=normalize(L4+V), H5=normalize(L5+V), H6=normalize(L6+V);
+    float s1 = pow(max(dot(N,H1),0.), 320.) * 1.80;
+    float s2 = pow(max(dot(N,H2),0.), 250.) * 1.30;
+    float s3 = pow(max(dot(N,H3),0.), 200.) * 0.95;
+    float s4 = pow(max(dot(N,H4),0.), 170.) * 0.65;
+    float s5 = pow(max(dot(N,H5),0.), 290.) * 1.10;
+    float s6 = pow(max(dot(N,H6),0.), 190.) * 0.80;
+    float d  = max(dot(N,L1),0.) * 0.06 + max(dot(N,L2),0.) * 0.03;
+    vec3 col = vec3(0.99, 0.97, 0.98) - (d * vec3(3.5)) + ((s1+s2+s3+s4+s5+s6) * vec3(0.05));
+    float totalSpec = s1+s2+s3+s4+s5+s6;
+    if(totalSpec > 0.5) { col = vec3(1.0); }
+    gl_FragColor = vec4(col, 1.);
+  }
+`;
+
+/* ══════════════════════════════════════════════════════════════════
+   ③ SHADERS — NEBULOSAS DEL CARRUSEL (instancia Three.js #2)
+══════════════════════════════════════════════════════════════════ */
+const NEBULA_VERT = `
+  uniform float u_time;
+  varying vec3 vNorm;
+  varying vec3 vPos;
+  vec3 _m3(vec3 x){ return x - floor(x*(1./289.))*289.; }
+  vec4 _m4(vec4 x){ return x - floor(x*(1./289.))*289.; }
+  vec4 _p(vec4 x) { return _m4(((x*34.)+1.)*x); }
+  vec4 _t(vec4 r) { return 1.79284291400159 - 0.85373472095314*r; }
+  vec3 _f(vec3 t) { return t*t*t*(t*(t*6.-15.)+10.); }
+  float cnoise(vec3 P){
+    vec3 Pi0=floor(P), Pi1=Pi0+1.; Pi0=_m3(Pi0); Pi1=_m3(Pi1);
+    vec3 Pf0=fract(P), Pf1=Pf0-1.;
+    vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x); vec4 iy=vec4(Pi0.y,Pi0.y,Pi1.y,Pi1.y);
+    vec4 iz0=Pi0.zzzz, iz1=Pi1.zzzz; vec4 ixy=_p(_p(ix)+iy); vec4 ixy0=_p(ixy+iz0), ixy1=_p(ixy+iz1);
+    vec4 gx0=ixy0/7., gy0=fract(floor(gx0)/7.)-.5; gx0=fract(gx0);
+    vec4 gz0=.5-abs(gx0)-abs(gy0), sz0=step(gz0,vec4(0.)); gx0-=sz0*(step(0.,gx0)-.5); gy0-=sz0*(step(0.,gy0)-.5);
+    vec4 gx1=ixy1/7., gy1=fract(floor(gx1)/7.)-.5; gx1=fract(gx1);
+    vec4 gz1=.5-abs(gx1)-abs(gy1), sz1=step(gz1,vec4(0.)); gx1-=sz1*(step(0.,gx1)-.5); gy1-=sz1*(step(0.,gy1)-.5);
+    vec3 g000=vec3(gx0.x,gy0.x,gz0.x), g100=vec3(gx0.y,gy0.y,gz0.y); vec3 g010=vec3(gx0.z,gy0.z,gz0.z), g110=vec3(gx0.w,gy0.w,gz0.w);
+    vec3 g001=vec3(gx1.x,gy1.x,gz1.x), g101=vec3(gx1.y,gy1.y,gz1.y); vec3 g011=vec3(gx1.z,gy1.z,gz1.z), g111=vec3(gx1.w,gy1.w,gz1.w);
+    vec4 n0=_t(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110))); g000*=n0.x; g010*=n0.y; g100*=n0.z; g110*=n0.w;
+    vec4 n1=_t(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111))); g001*=n1.x; g011*=n1.y; g101*=n1.z; g111*=n1.w;
+    vec3 f=_f(Pf0); float n00=dot(g000,Pf0), n10=dot(g100,vec3(Pf1.x,Pf0.yz));
+    float n01=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)), n11=dot(g110,vec3(Pf1.xy,Pf0.z));
+    float n002=dot(g001,vec3(Pf0.xy,Pf1.z)), n102=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z));
+    float n012=dot(g011,vec3(Pf0.x,Pf1.yz)), n112=dot(g111,Pf1);
+    vec4 nz=mix(vec4(n00,n10,n01,n11),vec4(n002,n102,n012,n112),f.z); vec2 ny=mix(nz.xy,nz.zw,f.y);
+    return 2.2*mix(ny.x,ny.y,f.x);
+  }
+  void main(){
+    vec3 p = position;
+    float n = cnoise(p*2.0 + vec3(u_time*0.4)) * 0.45 + cnoise(p*4.0 + vec3(u_time*0.6)) * 0.20;
+    vec3 d = p + normal * n * 0.55;
+    vNorm = normalize(normalMatrix * normal);
+    vPos = (modelViewMatrix * vec4(d, 1.)).xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(d, 1.);
+  }
+`;
+
+const NEBULA_FRAG = `
+  varying vec3 vNorm;
+  varying vec3 vPos;
+  uniform vec3 u_baseColor;
+  uniform vec3 u_flashColor;
+  void main(){
+    vec3 N = normalize(vNorm); vec3 V = normalize(-vPos);
+    vec3 L1 = normalize(vec3(5., 8., 5.) - vPos); vec3 L2 = normalize(vec3(-5., -4., 4.) - vPos);
+    float s1 = pow(max(dot(N,L1),0.), 120.) * 1.2; float s2 = pow(max(dot(N,L2),0.), 80.) * 0.8;
+    float fr = pow(1. - max(dot(N,V), 0.), 2.5);
+    vec3 base = mix(u_baseColor, u_flashColor, fr * 0.6);
+    vec3 col = base + (s1 + s2) * 0.35;
+    gl_FragColor = vec4(col, 1.);
+  }
+`;
+
+/* ══════════════════════════════════════════════════════════════════
+   ④ INSTANCIA THREE.JS #1 — NEBULOSA HERO CROMADA
+══════════════════════════════════════════════════════════════════ */
+const heroCanvas   = document.getElementById('webgl');
+const heroSection  = document.getElementById('hero');
+const pivot        = document.getElementById('text-pivot');
+const hint         = document.getElementById('hint');
+const shutter      = document.getElementById('shutter');
+
+const heroRenderer = new THREE.WebGLRenderer({
+  canvas: heroCanvas,
+  antialias: true,
+  alpha: true,
+  powerPreference: 'high-performance',
+});
+heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+heroRenderer.setClearColor(0x000000, 0);
+
+const heroScene  = new THREE.Scene();
+const heroCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+heroCamera.position.set(0, 0, 5.8);
+
+function onHeroResize() {
+  const W = heroSection.clientWidth, H = heroSection.clientHeight;
+  heroRenderer.setSize(W, H);
+  heroCamera.aspect = W / H;
+  heroCamera.updateProjectionMatrix();
+}
+onHeroResize();
+window.addEventListener('resize', onHeroResize);
+
+const heroUniforms = {
+  u_time: { value: 0 },
+  u_amp:  { value: 0.52 },
+  u_mv:   { value: new THREE.Vector2(0, 0) },
+  u_sv:   { value: 0 },
+};
+
+const blobGeo = new THREE.IcosahedronGeometry(1.58, 80);
+const blobMat = new THREE.ShaderMaterial({
+  vertexShader:   HERO_VERT,
+  fragmentShader: HERO_FRAG,
+  uniforms: heroUniforms,
+});
+const blob = new THREE.Mesh(blobGeo, blobMat);
+heroScene.add(blob);
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑤ ESTADO GLOBAL — SCROLL & INTERACCIÓN
+══════════════════════════════════════════════════════════════════ */
+const FADE_END      = 1000;   /* px: hero desvanece */
+const SHUTTER_RANGE = 600;    /* px: recorrido de la persiana */
+
+/* Muelle del héroe */
+let hRX_hero = 0, hRY_hero = 0;
+let tRX_hero = 0, tRY_hero = 0;
+const SK_HERO = 0.075;
+
+const targetMV = new THREE.Vector2(0, 0);
+let   targetSV = 0;
+let   lastMX = 0, lastMY = 0;
+let   scrollVel = 0, lastScrollY = 0;
+
+/* Muelle del carrusel */
+let hRX_car = 0, hRY_car = 0;
+let targetRX_car = 0, targetRY_car = 0;
+const SK_CAR = 0.04;
+
+/* Bandera: el shutter está completamente arriba (nebulosas activas) */
+let shutterFullyOpen = false;
+/* Bandera: los nodos pueden recibir opacity de renderCarousel (cinemática completada) */
+let carouselOpacityReady = false;
+/* Bandera: cinemática activa — tick() cede control de hero y nodos a GSAP */
+let cinemaRunning = false;
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑥ INSTANCIA THREE.JS #2 — MOTOR DEL CARRUSEL
+══════════════════════════════════════════════════════════════════ */
+const carousel       = document.getElementById('carousel3D');
+const counterText    = document.getElementById('counterText');
+const counterFooter  = document.getElementById('counterTextFooter');
+const detailsView    = document.getElementById('detailsView');
+const detailsContent = document.getElementById('detailsContent');
+const detailsBreadcrumb = document.getElementById('detailsBreadcrumb');
+const btnClose       = document.getElementById('btnCloseDetails');
+const iaProfilePage     = document.getElementById('ia-profile-page');
+const profileContent    = document.getElementById('profileContent');
+const profileBreadcrumb = document.getElementById('profileBreadcrumb');
+const btnCloseProfile   = document.getElementById('btnCloseProfile');
+
+let currentIndex  = 0;
+/* Bandera anti-spam: true mientras una transición de carrusel (vía teclado)
+   está en curso. Bloquea nuevas pulsaciones hasta que la animación concluye
+   al 100%, evitando solapamientos de la cinemática del carrusel. */
+let isAnimating   = false;
+let nodeEls       = [];
+let nodeStates    = [];
+let activeNebulas = [];
+
+let sortCriteria   = 'puntuacion';
+let sortDescending = true;
+let detailEntry    = null;
+
+const startTime = performance.now();
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+/* ─── Dispose helper ─── */
+function disposeNebula(entry) {
+  if (!entry) return;
+  entry.mesh.geometry.dispose();
+  entry.mesh.material.dispose();
+  entry.renderer.dispose();
+  const i = activeNebulas.indexOf(entry);
+  if (i > -1) activeNebulas.splice(i, 1);
+}
+
+/* ─── Init Universe ─── */
+function initUniverse() {
+  carousel.innerHTML = '';
+  nodeEls = []; nodeStates = [];
+  activeNebulas.forEach(disposeNebula);
+  activeNebulas = [];
+
+  IA_DATABASE.forEach((ia, index) => {
+    const node = document.createElement('div');
+    node.className = 'nebula-node';
+    node.innerHTML = `
+      <h2 class="nebula-title">${ia.nombre}</h2>
+      <div class="nebula-canvas-container" style="position:relative;width:240px;height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <canvas id="canvas-nebula-${index}"></canvas>
+        <div class="nebula-shadow" style="position:absolute;bottom:-35px;width:170px;height:20px;background:radial-gradient(ellipse at center,rgba(0,0,0,0.28) 0%,rgba(0,0,0,0) 80%);filter:blur(6px);border-radius:50%;pointer-events:none;z-index:-1;"></div>
+      </div>
+    `;
+    node.addEventListener('click', (e) => {
+      e.stopPropagation();  /* evita propagación al stage3D / shutter */
+      e.preventDefault();   /* evita scroll nativo u otros comportamientos del browser */
+      if (index === currentIndex) {
+        openCategory(index);  /* prepara el HTML del catálogo */
+        abrirVistaDetalle();  /* congela documento, da foco, muestra vista */
+      }
+      else { currentIndex = index; renderCarousel(); }
+    });
+    carousel.appendChild(node);
+    nodeEls.push(node);
+
+    const delta = index - currentIndex;
+    const initRY    = delta * -16;
+    const initZ     = delta === 0 ? 140 : -280 - (Math.abs(delta) * 140);
+    const initX     = delta * 290 + (delta > 0 ? 60 : delta < 0 ? -60 : 0);
+    const initScale = delta === 0 ? 1.15 : Math.max(0.55, 0.85 - (Math.abs(delta) * 0.08));
+    nodeStates.push({
+      x: initX, z: initZ, ry: initRY, scale: initScale,
+      targetX: initX, targetZ: initZ, targetRY: initRY, targetScale: initScale
+    });
+  });
+
+  IA_DATABASE.forEach((ia, index) => {
+    const geo = new THREE.IcosahedronGeometry(0.55, 22);
+    const cv  = document.getElementById(`canvas-nebula-${index}`);
+    if (!cv) return;
+    const r2 = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+    r2.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    r2.setSize(240, 240, false);
+    r2.setClearColor(0x000000, 0);
+
+    const sc2  = new THREE.Scene();
+    const cam2 = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    cam2.position.z = 4.2;
+
+    const u2 = {
+      u_time:       { value: 0 },
+      u_baseColor:  { value: new THREE.Vector3(...ia.colorBase) },
+      u_flashColor: { value: new THREE.Vector3(...ia.colorFlash) }
+    };
+    const m2 = new THREE.ShaderMaterial({ vertexShader: NEBULA_VERT, fragmentShader: NEBULA_FRAG, uniforms: u2 });
+    const mesh2 = new THREE.Mesh(geo, m2);
+    sc2.add(mesh2);
+    activeNebulas.push({ index, renderer: r2, scene: sc2, camera: cam2, mesh: mesh2, uniforms: u2 });
+  });
+
+  renderCarousel();
+}
+
+/* ─── Render Carousel positions ─── */
+function renderCarousel() {
+  currentIndex = clamp(currentIndex, 0, IA_DATABASE.length - 1);
+  counterText.textContent   = (currentIndex + 1) + ' / ' + IA_DATABASE.length;
+  counterFooter.textContent = IA_DATABASE[currentIndex].nombre.toUpperCase();
+
+  IA_DATABASE.forEach((_, index) => {
+    const node  = nodeEls[index];
+    const delta = index - currentIndex;
+    if (Math.abs(delta) > 4) { node.style.display = 'none'; return; }
+    node.style.display = '';
+
+    const angleStep  = -16;
+    const rotateY    = delta * angleStep;
+    const translateZ = delta === 0 ? 140 : -280 - (Math.abs(delta) * 140);
+    const translateX = delta * 290 + (delta > 0 ? 60 : delta < 0 ? -60 : 0);
+    const scale      = delta === 0 ? 1.15 : Math.max(0.55, 0.85 - (Math.abs(delta) * 0.08));
+
+    const state = nodeStates[index];
+    state.targetX     = translateX;
+    state.targetZ     = translateZ;
+    state.targetRY    = rotateY;
+    state.targetScale = scale;
+
+    node.style.zIndex  = 100 - Math.abs(delta);
+    /* Solo escribir opacity cuando la cinemática haya completado el fade-in.
+       Antes de eso, GSAP es el único propietario de la opacidad de los nodos. */
+    if (carouselOpacityReady) {
+      node.style.opacity = delta === 0 ? "1" : Math.abs(delta) <= 2 ? "0.6" : "0";
+    }
+  });
+}
+
+/* ─── Navegación exclusiva por teclado, con control anti-spam ───
+   direction = +1 (siguiente universo) | -1 (universo anterior).
+   Mientras isAnimating sea true, cualquier pulsación adicional se
+   ignora por completo. La bandera vuelve a false únicamente cuando
+   la transición visual del carrusel (gestionada por el lerp de
+   tick(), POS_LERP≈0.12) ha concluido al 100%. */
+const CAROUSEL_TRANSITION_MS = 650;
+
+function navigateCarousel(direction) {
+  if (isAnimating) return;
+  const next = clamp(currentIndex + direction, 0, IA_DATABASE.length - 1);
+  if (next === currentIndex) return;   /* ya en el límite del directorio */
+
+  isAnimating = true;
+  currentIndex = next;
+  renderCarousel();
+
+  /* GSAP gestiona el temporizador de fin de transición (anti-spam) */
+  gsap.delayedCall(CAROUSEL_TRANSITION_MS / 1000, () => {
+    isAnimating = false;
+  });
+}
+
+/* ─── Build tool card HTML ─── */
+function buildToolCard(t) {
+  const priceTag = t.precio === 0
+    ? '<span class="metric-badge free">GRATIS</span>'
+    : `<span class="metric-badge price">€${t.precio}/mes</span>`;
+  const safeName = t.nombre.replace(/'/g, "\\'");
+  return `
+    <div class="tool-card" data-ia-nombre="${t.nombre}">
+      <div class="tool-card-header">
+        <div class="tool-card-name">${t.nombre}</div>
+        <div class="tool-card-empresa">${t.empresa}</div>
+      </div>
+      <div class="tool-card-desc">${t.descripcion}</div>
+      <div class="tool-card-metrics">
+        <span class="metric-badge score">★ ${t.puntuacion.toFixed(1)}</span>
+        <span class="metric-badge perf">⚡ ${t.rendimiento}%</span>
+        <span class="metric-badge speed">◎ ${t.rapidez}%</span>
+        ${priceTag}
+      </div>
+      <div class="tool-card-actions">
+        <button class="btn-ficha-tecnica" data-ia-nombre="${t.nombre}">VER FICHA TÉCNICA</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FICHA TÉCNICA — Subpágina interna (Layered View)
+══════════════════════════════════════════════════════════════════ */
+
+/* Busca una IA por nombre en la base de fichas técnicas */
+function buscarFicha(iaNombre) {
+  return IA_FICHAS_DATABASE.find(ia => ia.nombre === iaNombre) || null;
+}
+
+/* Construye el HTML del bloque "Coste" con 3 planes (Gratuito, Básico, Premium) */
+function buildCostePlans(ia) {
+  const esGratis = ia.precio === 0;
+  let plans;
+
+  if (esGratis) {
+    plans = [
+      {
+        nombre: 'Gratuito',
+        precio: 'Gratis',
+        sufijo: '',
+        desc: 'Uso ilimitado o comunitario.',
+        featured: true,
+        tag: 'Recomendado'
+      },
+      {
+        nombre: 'Básico',
+        precio: 'No disponible',
+        sufijo: '',
+        desc: 'Auto-alojado.',
+        featured: false,
+        tag: ''
+      },
+      {
+        nombre: 'Premium',
+        precio: 'Donación',
+        sufijo: '',
+        desc: 'Soporte Enterprise.',
+        featured: false,
+        tag: ''
+      }
+    ];
+  } else {
+    const basico  = ia.precio;
+    const premium = (ia.precio * 2.5).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+    plans = [
+      {
+        nombre: 'Gratuito',
+        precio: '0$',
+        sufijo: '/ mes',
+        desc: 'Prueba Gratis / Acceso Limitado.',
+        featured: false,
+        tag: ''
+      },
+      {
+        nombre: 'Básico',
+        precio: `${basico}$`,
+        sufijo: '/ mes',
+        desc: 'Plan Personal / Profesional estándar.',
+        featured: true,
+        tag: 'Recomendado'
+      },
+      {
+        nombre: 'Premium',
+        precio: `${premium}$`,
+        sufijo: '/ mes',
+        desc: 'Plan Pro Avanzado / Equipos con funciones extendidas.',
+        featured: false,
+        tag: ''
+      }
+    ];
+  }
+
+  const cardsHTML = plans.map(p => `
+    <div class="cost-plan ${p.featured ? 'featured' : ''}">
+      ${p.tag ? `<span class="cost-plan-tag">${p.tag}</span>` : ''}
+      <span class="cost-plan-name">${p.nombre}</span>
+      <div class="cost-plan-price">${p.precio}${p.sufijo ? `<small>${p.sufijo}</small>` : ''}</div>
+      <p class="cost-plan-desc">${p.desc}</p>
+    </div>
+  `).join('');
+
+  return `
+    <div class="profile-cost-section">
+      <span class="profile-cost-label">COSTE</span>
+      <div class="profile-cost-grid">${cardsHTML}</div>
+    </div>
+  `;
+}
+
+/* Construye el HTML de la ficha técnica de una IA */
+function buildFichaTecnicaHTML(ia) {
+  const costeHTML = buildCostePlans(ia);
+
+  return `
+    <!-- ── Columna izquierda: anuncio lateral sticky ── -->
+    <aside class="profile-col-ad">
+      <div class="adsense-placeholder sidebar-ad"
+           role="complementary" aria-label="Publicidad">
+        <!-- Google AdSense Placeholder — sustituye ca-pub-XXXXX y data-ad-slot -->
+        <!-- <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-format="auto"
+             data-full-width-responsive="true"
+             data-ad-client="ca-pub-XXXXXXXXXXXXX"
+             data-ad-slot="YYYYYYYYYYYY"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script> -->
+      </div>
+    </aside>
+
+    <!-- ── Columna derecha: contenido completo de la ficha ── -->
+    <div class="profile-col-main">
+
+      <div class="profile-badges">
+        <span class="profile-badge name">${ia.nombre}</span>
+        <span class="profile-badge empresa">${ia.empresa}</span>
+        <span class="profile-badge categoria">${ia.categoria}</span>
+      </div>
+
+      <h2 class="profile-title">${ia.nombre}</h2>
+
+      <p class="profile-desc">${ia.descripcion}</p>
+
+      <div class="profile-ideal-card">
+        <span class="profile-ideal-label">IDEAL PARA:</span>
+        <p class="profile-ideal-text">${ia.idealPara}</p>
+      </div>
+
+      <div class="profile-metrics">
+        <div class="profile-metric">
+          <div class="profile-metric-label">
+            <span>PUNTUACIÓN</span>
+            <span class="profile-metric-value">${ia.puntuacion.toFixed(1)} / 5.0</span>
+          </div>
+          <div class="profile-metric-bar-track">
+            <div class="profile-metric-bar-fill score" data-target="${(ia.puntuacion / 5) * 100}"></div>
+          </div>
+        </div>
+        <div class="profile-metric">
+          <div class="profile-metric-label">
+            <span>RENDIMIENTO</span>
+            <span class="profile-metric-value">${ia.rendimiento}%</span>
+          </div>
+          <div class="profile-metric-bar-track">
+            <div class="profile-metric-bar-fill perf" data-target="${ia.rendimiento}"></div>
+          </div>
+        </div>
+        <div class="profile-metric">
+          <div class="profile-metric-label">
+            <span>RAPIDEZ</span>
+            <span class="profile-metric-value">${ia.rapidez}%</span>
+          </div>
+          <div class="profile-metric-bar-track">
+            <div class="profile-metric-bar-fill speed" data-target="${ia.rapidez}"></div>
+          </div>
+        </div>
+      </div>
+
+      ${costeHTML}
+
+      <a class="profile-cta" href="${ia.enlace}" target="_blank" rel="noopener noreferrer">
+        VISITAR SITIO OFICIAL DE ${ia.nombre.toUpperCase()} ↗
+      </a>
+
+    </div><!-- /profile-col-main -->
+  `;
+}
+
+/* Abre la subpágina de ficha técnica para una IA concreta */
+function abrirFichaTecnica(iaNombre) {
+  const ia = buscarFicha(iaNombre);
+  if (!ia) return;
+
+  profileBreadcrumb.textContent = 'BITVERSUS → ' + ia.categoria.toUpperCase() + ' → ' + ia.nombre.toUpperCase();
+  profileContent.innerHTML = buildFichaTecnicaHTML(ia);
+
+  /* Reinicia el scroll del panel para que siempre abra desde arriba */
+  const profileBody = iaProfilePage.querySelector('.profile-body');
+  if (profileBody) profileBody.scrollTop = 0;
+
+  iaProfilePage.classList.add('visible');
+
+  /* Enlaza el scroll-lock directamente sobre .profile-body */
+  bindProfileBodyScrollLock();
+
+  /* Transfiere el foco a .profile-body: con esto ↑/↓ y la rueda
+     operan sobre la ficha técnica, no sobre el documento ni el catálogo */
+  requestAnimationFrame(() => {
+    if (profileBody) profileBody.focus({ preventScroll: true });
+    /* Anima las barras de progreso */
+    requestAnimationFrame(() => {
+      iaProfilePage.querySelectorAll('.profile-metric-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.target + '%';
+      });
+    });
+  });
+}
+
+/* Cierra la subpágina de ficha técnica y vuelve al catálogo.
+   @param {boolean} [sinDescongelar=false] — true cuando lo llama
+   cerrarVistaDetalle para evitar doble unfreeze. */
+function cerrarFichaTecnica(sinDescongelar = false) {
+  iaProfilePage.classList.remove('visible');
+
+  /* Resetea las barras para la próxima apertura */
+  iaProfilePage.querySelectorAll('.profile-metric-bar-fill').forEach(bar => {
+    bar.style.width = '0%';
+  });
+
+  /* Devuelve el foco al panel del catálogo (.details-right)
+     para que ↑/↓ sigan funcionando correctamente en el catálogo */
+  if (!sinDescongelar) {
+    requestAnimationFrame(() => {
+      const right = detailsContent.querySelector('.details-right');
+      if (right) right.focus({ preventScroll: true });
+    });
+  }
+}
+
+/* ─── Sort engine ─── */
+function sortSubTools(criteria, isDescending) {
+  const cat = IA_DATABASE[currentIndex];
+  if (!cat || !cat.subherramientas.length) return [];
+  const arr = [...cat.subherramientas];
+  arr.sort((a, b) => {
+    const va = a[criteria] ?? 0;
+    const vb = b[criteria] ?? 0;
+    return isDescending ? vb - va : va - vb;
+  });
+  return arr;
+}
+
+function getSortDirLabel(criteria, isDesc) {
+  if (criteria === 'precio') return isDesc ? 'MÁS CARO' : 'MÁS BARATO';
+  return isDesc ? 'MAYOR' : 'MENOR';
+}
+
+function renderToolGrid() {
+  const grid = document.querySelector('.tool-grid');
+  if (!grid) return;
+  grid.classList.add('sorting');
+  setTimeout(() => {
+    const sorted = sortSubTools(sortCriteria, sortDescending);
+    grid.innerHTML = sorted.length === 0
+      ? '<div class="catalog-empty">Las herramientas de este universo se añadirán próximamente.</div>'
+      : sorted.map(t => buildToolCard(t)).join('');
+    grid.classList.remove('sorting');
+  }, 150);
+}
+
+/* ─── Open category / details view ─── */
+function openCategory(index) {
+  const cat = IA_DATABASE[index];
+  detailsBreadcrumb.textContent = 'BITVERSUS → ' + cat.nombre.toUpperCase();
+  const n = cat.subherramientas.length;
+
+  sortCriteria   = 'puntuacion';
+  sortDescending = true;
+
+  const sortedTools = sortSubTools(sortCriteria, sortDescending);
+  const toolsHTML = n === 0
+    ? '<div class="catalog-empty">Las herramientas de este universo se añadirán próximamente.</div>'
+    : sortedTools.map(t => buildToolCard(t)).join('');
+
+  const dirLabel = getSortDirLabel(sortCriteria, sortDescending);
+
+  detailsContent.innerHTML = `
+    <div class="details-left">
+      <div class="details-left-canvas-wrap">
+        <canvas id="detail-nebula-canvas"></canvas>
+        <div class="details-left-shadow"></div>
+      </div>
+      <div class="details-left-overlay">
+        <div class="details-category-pill">${cat.id}</div>
+        <div class="details-left-title">${cat.nombre}</div>
+        <div class="details-left-sub">${cat.descripcion}</div>
+        <div class="details-tool-count">${n > 0 ? n + ' HERRAMIENTAS' : '— PRÓXIMAMENTE'}</div>
+      </div>
+    </div>
+    <div class="details-right">
+      <div class="catalog-header">
+        <div class="catalog-header-left">
+          <h3>CATÁLOGO DE HERRAMIENTAS</h3>
+          <span class="tool-tally">${n} / ∞</span>
+        </div>
+        <div class="sort-controls">
+          <select class="sort-select" id="sortSelect">
+            <option value="puntuacion">Mayor Puntuación</option>
+            <option value="rendimiento">Mejor Rendimiento</option>
+            <option value="rapidez">Mayor Rapidez</option>
+            <option value="precio">Precio (Más Barato)</option>
+          </select>
+          <button class="sort-direction-btn ${sortDescending ? 'desc-active' : ''}" id="sortDirBtn">
+            <span id="sortDirIcon">${sortDescending ? '↓' : '↑'}</span>
+            <span id="sortDirText">${dirLabel}</span>
+          </button>
+        </div>
+      </div>
+      <div class="tool-grid">${toolsHTML}</div>
+      <!-- ░░░ ADSENSE — BANNER SKYSCRAPER (al final del catálogo) ░░░ -->
+      <div class="adsense-catalog-footer"
+           role="complementary" aria-label="Publicidad">
+        <div class="adsense-placeholder skyscraper">
+          <!-- Google AdSense Placeholder — sustituye ca-pub-XXXXX y data-ad-slot -->
+          <!-- <ins class="adsbygoogle"
+               style="display:block; text-align:center;"
+               data-ad-format="auto"
+               data-full-width-responsive="true"
+               data-ad-client="ca-pub-XXXXXXXXXXXXX"
+               data-ad-slot="YYYYYYYYYYYY"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script> -->
+        </div>
+      </div>
+    </div>
+  `;
+
+  /* Bind sort listeners */
+  const sortSelect  = document.getElementById('sortSelect');
+  const sortDirBtn  = document.getElementById('sortDirBtn');
+  const sortDirIcon = document.getElementById('sortDirIcon');
+  const sortDirText = document.getElementById('sortDirText');
+
+  sortSelect.value = sortCriteria;
+
+  sortSelect.addEventListener('change', () => {
+    sortCriteria = sortSelect.value;
+    sortDescending = (sortCriteria !== 'precio');
+    updateDirBtn();
+    renderToolGrid();
+  });
+
+  sortDirBtn.addEventListener('click', () => {
+    sortDescending = !sortDescending;
+    updateDirBtn();
+    renderToolGrid();
+  });
+
+  function updateDirBtn() {
+    const label = getSortDirLabel(sortCriteria, sortDescending);
+    sortDirIcon.textContent = sortDescending ? '↓' : '↑';
+    sortDirText.textContent = label;
+    sortDirBtn.classList.toggle('desc-active', sortDescending);
+  }
+
+  /* WebGL detail nebula */
+  if (detailEntry) { disposeNebula(detailEntry); detailEntry = null; }
+  const dCanvas = document.getElementById('detail-nebula-canvas');
+  if (dCanvas) {
+    const dr = new THREE.WebGLRenderer({ canvas: dCanvas, antialias: true, alpha: true });
+    dr.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    dr.setSize(140, 140, false);
+    dr.setClearColor(0x000000, 0);
+    const ds = new THREE.Scene();
+    const dc = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    dc.position.z = 3.8;
+    const du = {
+      u_time:       { value: 0 },
+      u_baseColor:  { value: new THREE.Vector3(...cat.colorBase) },
+      u_flashColor: { value: new THREE.Vector3(...cat.colorFlash) }
+    };
+    const dg   = new THREE.IcosahedronGeometry(0.58, 45);
+    const dm   = new THREE.ShaderMaterial({ vertexShader: NEBULA_VERT, fragmentShader: NEBULA_FRAG, uniforms: du });
+    const dmsh = new THREE.Mesh(dg, dm);
+    ds.add(dmsh);
+    detailEntry = {
+      renderer: dr, scene: ds, camera: dc, mesh: dmsh, uniforms: du,
+      render(t) {
+        du.u_time.value = t;
+        dmsh.rotation.y = t * 0.15 + hRY_car;
+        dmsh.rotation.x = hRX_car;
+        dr.render(ds, dc);
+      }
+    };
+  }
+
+  detailsView.classList.add('visible');
+  /* NOTA: la visibilidad final y el foco los gestiona abrirVistaDetalle(),
+     que llama a openCategory() primero. Este .classList.add es el fallback
+     para compatibilidad con cualquier llamada directa futura. */
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑦ EVENTOS
+══════════════════════════════════════════════════════════════════ */
+
+/* Scroll — controla persiana.
+   Guardado con isDocFrozen: cuando freezeDocument() aplica position:fixed,
+   el browser emite un scroll espurio con scrollY=0 que resetearía la persiana.
+   Ignoramos todos los eventos de scroll mientras el documento esté congelado. */
+window.addEventListener('scroll', () => {
+  if (isDocFrozen) return;          /* ← descarta el scroll spike */
+  const sy    = window.scrollY;
+  const delta = Math.abs(sy - lastScrollY);
+  scrollVel   = delta / 25;
+  lastScrollY = sy;
+  targetSV    = scrollVel;
+}, { passive: true });
+
+/* MouseMove — alimenta ambos sistemas */
+document.addEventListener('mousemove', e => {
+  const sp = Math.min(window.scrollY / FADE_END, 1);
+
+  /* Hero spring — solo activo cuando el hero es visible */
+  if (sp <= 0.06) {
+    const cx = window.innerWidth  / 2;
+    const cy = window.innerHeight / 2;
+    const dx = (e.clientX - cx) / (window.innerWidth  / 2);
+    const dy = (e.clientY - cy) / (window.innerHeight / 2);
+    tRX_hero = -dy * 28;
+    tRY_hero =  dx * 28;
+
+    const vx = (e.clientX - lastMX) / 72;
+    const vy = (e.clientY - lastMY) / 72;
+    targetMV.x += vx;
+    targetMV.y += vy;
+  }
+
+  /* Carrusel spring — siempre lee la posición del ratón */
+  targetRX_car = (e.clientY / window.innerHeight - 0.5) * 0.6;
+  targetRY_car = (e.clientX / window.innerWidth  - 0.5) * 0.6;
+
+  lastMX = e.clientX;
+  lastMY = e.clientY;
+});
+
+document.addEventListener('mouseleave', () => { tRX_hero = 0; tRY_hero = 0; });
+
+/* Teclado — solo activo cuando el shutter está completamente abierto */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && iaProfilePage.classList.contains('visible')) {
+    cerrarFichaTecnica();
+    return;
+  }
+  if (e.key === 'Escape' && detailsView.classList.contains('visible')) {
+    cerrarVistaDetalle();
+    return;
+  }
+
+  if (!shutterFullyOpen) return;
+
+  /* Si el catálogo o la ficha técnica están abiertos, el documento está
+     congelado y el foco se transfirió a su contenedor scrollable interno
+     (ver freezeDocument/abrirVistaDetalle). En ese caso NO interceptamos
+     nada: dejamos que el navegador gestione ↑/↓/PageUp/Space sobre ese
+     contenedor con normalidad. */
+  const detailOrProfileOpen = detailsView.classList.contains('visible')
+                            || iaProfilePage.classList.contains('visible');
+  if (detailOrProfileOpen) return;
+
+  /* ── BLINDAJE DE SCROLL VERTICAL ──────────────────────────────────
+     Estamos viendo activamente el carrusel de nebulosas (#app-nebulas /
+     #stage3D) y ninguna vista interna está abierta: anulamos por
+     completo cualquier tecla que el navegador pudiera usar para
+     desplazar la página (flechas, RePág/AvPág, barra espaciadora),
+     de modo que la ÚNICA forma de navegar sea mediante las flechas.
+     Se permite el espacio en campos editables para no romper UX de
+     formularios o búsquedas. */
+  const tag        = (e.target.tagName || '').toUpperCase();
+  const isEditable = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+                  || e.target.isContentEditable;
+
+  const isScrollKey = e.key === 'ArrowUp'   || e.key === 'ArrowDown' ||
+                       e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+                       e.key === 'PageUp'    || e.key === 'PageDown';
+
+  if (isScrollKey) e.preventDefault();
+  if (e.code === 'Space' && !isEditable) e.preventDefault();
+
+  /* Navegación del carrusel — EXCLUSIVAMENTE por teclado.
+     Derecha/Abajo → siguiente universo · Izquierda/Arriba → anterior.
+     navigateCarousel() ya contiene el control anti-spam (isAnimating). */
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    navigateCarousel(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    navigateCarousel(-1);
+  }
+});
+
+/* ── BLOQUEO ABSOLUTO DEL SCROLL NATIVO EN #app-nebulas / #stage3D ──
+   Mientras el usuario está visualizando activamente el carrusel
+   (shutterFullyOpen / nebulaLocked), interceptamos y anulamos por
+   completo la rueda del ratón y el trackpad. La navegación entre
+   universos pasa a ser EXCLUSIVA de las flechas del teclado: este
+   listener ya no avanza ni retrocede el índice, solo bloquea. */
+window.addEventListener('wheel', (e) => {
+  if (!shutterFullyOpen) return;
+  if (detailsView.classList.contains('visible')) return;
+  if (iaProfilePage.classList.contains('visible')) return;
+  e.preventDefault();
+}, { passive: false });
+
+/* Cerrar details */
+btnClose.addEventListener('click', () => {
+  cerrarVistaDetalle();
+});
+
+/* Intercepción del clic en las tarjetas del catálogo → abrirFichaTecnica() */
+detailsContent.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.btn-ficha-tecnica, .tool-card');
+  if (!trigger) return;
+  const iaNombre = trigger.dataset.iaNombre || trigger.closest('[data-ia-nombre]')?.dataset.iaNombre;
+  if (!iaNombre) return;
+  abrirFichaTecnica(iaNombre);
+});
+
+/* Cierre de la ficha técnica → vuelve al catálogo */
+btnCloseProfile.addEventListener('click', cerrarFichaTecnica);
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑦B SISTEMA DE AISLAMIENTO DE SCROLL POR VISTA
+   ─────────────────────────────────────────────────────────────────
+   ESTRATEGIA (equivalente a "página independiente" sin router):
+   
+   Problema raíz: el documento tiene scroll nativo activo (window.scrollY
+   controla la persiana). Cuando #detailsView o #ia-profile-page están
+   visibles, cualquier evento de teclado (↑ ↓) o rueda que no sea
+   consumido por un elemento con scroll propio cae al documento y
+   mueve la persiana por debajo.
+   
+   Solución: al abrir una vista de capa superior —
+     1. Se memoriza el scrollY actual del documento.
+     2. Se congela el documento (overflow:hidden + position:fixed con
+        top negativo = técnica cross-browser que evita el layout shift
+        que produce solo overflow:hidden).
+     3. Se transfiere el foco programáticamente al contenedor scrollable
+        de esa vista (tabindex="-1"), de modo que ↑/↓/rueda operen
+        sobre ese contenedor en lugar del documento.
+   Al cerrar la vista —
+     4. Se descongela el documento y se restaura scrollY exacto.
+     5. El foco vuelve al elemento que lo tenía antes.
+   
+   Con esto no hay ningún preventDefault ni stopPropagation que pueda
+   romper el scroll interno: el browser dirige los eventos al elemento
+   que tiene el foco, que es el contenedor correcto.
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Estado de congelación ── */
+let docScrollY    = 0;
+let isDocFrozen   = false;          /* bandera: documento congelado, ignorar window.scrollY */
+let focusedBefore = null; /* elemento con foco antes de abrir la vista */
+
+function freezeDocument() {
+  docScrollY = window.scrollY;
+  isDocFrozen = true;
+  /* position:fixed + top negativo: evita el reflow que causa overflow:hidden solo.
+     IMPORTANTE: este cambio de estilo provoca un evento 'scroll' espurio del browser
+     (window.scrollY cae a 0). La bandera isDocFrozen hace que tick() y el listener
+     de scroll ignoren ese spike y usen docScrollY guardado en su lugar. */
+  document.body.style.position   = 'fixed';
+  document.body.style.top        = `-${docScrollY}px`;
+  document.body.style.left       = '0';
+  document.body.style.right      = '0';
+  document.body.style.overflowY  = 'hidden';
+}
+
+function unfreezeDocument() {
+  document.body.style.position   = '';
+  document.body.style.top        = '';
+  document.body.style.left       = '';
+  document.body.style.right      = '';
+  document.body.style.overflowY  = '';
+  /* Restaurar scroll exactamente donde estaba ANTES de desactivar la bandera:
+     window.scrollTo emite otro evento 'scroll'; con isDocFrozen=true todavía
+     activo en ese frame, el tick lo descarta correctamente. */
+  window.scrollTo(0, docScrollY);
+  /* Desactivamos la bandera en el siguiente frame, cuando scrollY ya es estable */
+  requestAnimationFrame(() => { isDocFrozen = false; });
+}
+
+/* ── API pública: abrir / cerrar vista de catálogo ── */
+function abrirVistaDetalle() {
+  focusedBefore = document.activeElement;
+  freezeDocument();
+  detailsView.classList.add('visible');
+  /* Foco al panel scrollable .details-right para que ↑↓ y rueda
+     operen sobre él, no sobre el documento */
+  requestAnimationFrame(() => {
+    const right = detailsContent.querySelector('.details-right');
+    if (right) { right.scrollTop = 0; right.focus({ preventScroll: true }); }
+  });
+}
+
+function cerrarVistaDetalle() {
+  detailsView.classList.remove('visible');
+  if (detailEntry) { disposeNebula(detailEntry); detailEntry = null; }
+  /* Cerrar también la ficha si estuviera abierta */
+  if (iaProfilePage.classList.contains('visible')) {
+    cerrarFichaTecnica(/* sinDescongelar = */ true);
+  }
+  unfreezeDocument();
+  /* Devolver foco al elemento anterior (accesibilidad) */
+  if (focusedBefore && focusedBefore.focus) {
+    try { focusedBefore.focus({ preventScroll: true }); } catch (_) {}
+  }
+}
+
+/* ── Anti-scroll-chaining residual en .details-right ──────────
+   Con el documento congelado y el foco correcto, esto rara vez
+   se activa. Lo dejamos como red de seguridad para trackpads
+   rápidos que generen deltaY negativo antes de que el foco esté listo.
+   GUARD: si la ficha técnica (#ia-profile-page) está visible, este
+   listener NO debe interferir — el scroll lo gestiona .profile-body. */
+detailsView.addEventListener('wheel', (e) => {
+  if (iaProfilePage.classList.contains('visible')) return; /* ← ficha activa: no interferir */
+  const right = detailsContent.querySelector('.details-right');
+  if (!right) return;
+  if (e.deltaY < 0 && right.scrollTop === 0) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+detailsView.addEventListener('touchstart', (e) => {
+  if (iaProfilePage.classList.contains('visible')) return;
+  const right = detailsContent.querySelector('.details-right');
+  if (right) right._lastTY = e.touches[0]?.clientY ?? null;
+}, { passive: true });
+
+detailsView.addEventListener('touchmove', (e) => {
+  if (iaProfilePage.classList.contains('visible')) return;
+  const right = detailsContent.querySelector('.details-right');
+  if (!right || right._lastTY === null) return;
+  const dy = e.touches[0].clientY - right._lastTY;
+  right._lastTY = e.touches[0].clientY;
+  if (dy > 0 && right.scrollTop === 0) e.preventDefault();
+}, { passive: false });
+
+/* ── Anti-scroll-chaining residual en .profile-body ───────────
+   El foco en .profile-body hace que ↑/↓ y rueda operen sobre él.
+   Solo bloqueamos el overscroll ascendente cuando ya estamos en el
+   tope absoluto (scrollTop === 0 Y deltaY < 0).
+   Scroll hacia arriba con scrollTop > 0: LIBRE, sin preventDefault. */
+function bindProfileBodyScrollLock() {
+  const profileBody = iaProfilePage.querySelector('.profile-body');
+  if (!profileBody || profileBody._scrollLockBound) return;
+  profileBody._scrollLockBound = true;
+
+  profileBody.addEventListener('wheel', (e) => {
+    /* Bloqueo ÚNICO caso: intento de sobrepasar el tope superior */
+    if (e.deltaY < 0 && profileBody.scrollTop === 0) {
+      e.preventDefault();
+      return;
+    }
+    /* Cualquier otro caso (scroll ↑ con contenido arriba, scroll ↓): libre */
+  }, { passive: false });
+
+  profileBody.addEventListener('touchstart', (e) => {
+    profileBody._lastTY = e.touches[0]?.clientY ?? null;
+  }, { passive: true });
+
+  profileBody.addEventListener('touchmove', (e) => {
+    if (profileBody._lastTY === null || !e.touches?.length) return;
+    const dy = e.touches[0].clientY - profileBody._lastTY;
+    profileBody._lastTY = e.touches[0].clientY;
+    /* Solo bloquear overscroll táctil ascendente en el tope absoluto */
+    if (dy > 0 && profileBody.scrollTop === 0) e.preventDefault();
+  }, { passive: false });
+}
+bindProfileBodyScrollLock();
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑧ TICK — bucle unificado 60fps
+══════════════════════════════════════════════════════════════════ */
+const heroClock = new THREE.Clock();
+
+function tick() {
+  requestAnimationFrame(tick);
+
+  const heroT = heroClock.getElapsedTime();
+  const nebT  = (performance.now() - startTime) * 0.001;
+
+  /* Mientras el documento esté congelado (catálogo o ficha abiertos),
+     usamos el scrollY memorizado en lugar del window.scrollY real,
+     que el browser reporta como 0 tras aplicar position:fixed. */
+  const sy = isDocFrozen ? docScrollY : window.scrollY;
+
+  /* ── A. Progreso del Hero (fade) ──
+     GUARD: durante la cinemática, GSAP es el propietario exclusivo
+     de hero opacity/visibility, persiana y hint. tick() no debe
+     sobreescribir esos valores o provocará el parpadeo de 1 frame. */
+  if (!cinemaRunning) {
+    const fadeProg = Math.min(sy / FADE_END, 1);
+    heroSection.style.opacity    = 1 - fadeProg;
+    heroSection.style.visibility = (sy >= FADE_END) ? 'hidden' : 'visible';
+
+    /* ── B. Persiana ── */
+    const shutterScroll = Math.max(0, sy - FADE_END);
+    const shutterProg   = Math.min(shutterScroll / SHUTTER_RANGE, 1);
+    shutter.style.transform = `translateY(${-shutterProg * 100}vh)`;
+
+    /* Activa/desactiva controles de nebulosas según posición de la persiana */
+    shutterFullyOpen = shutterProg >= 0.98;
+
+    /* ── C. Hint ── */
+    hint.style.opacity = fadeProg > 0.25 ? '0' : '0.22';
+  }
+
+  /* ── D. Hero spring + renderizado ── */
+  hRX_hero += (tRX_hero - hRX_hero) * SK_HERO;
+  hRY_hero += (tRY_hero - hRY_hero) * SK_HERO;
+  pivot.style.transform = `rotateX(${hRX_hero}deg) rotateY(${hRY_hero}deg)`;
+
+  heroUniforms.u_time.value = heroT;
+  targetMV.multiplyScalar(0.90);
+  heroUniforms.u_mv.value.lerp(targetMV, 0.06);
+  targetSV *= 0.88;
+  heroUniforms.u_sv.value += (targetSV - heroUniforms.u_sv.value) * 0.06;
+
+  blob.rotation.y = heroT * 0.09;
+  blob.rotation.x = Math.sin(heroT * 0.13) * 0.07;
+
+  heroRenderer.render(heroScene, heroCamera);
+
+  /* ── E. Carrusel 3D spring + renderizado ── */
+  hRX_car += (targetRX_car - hRX_car) * SK_CAR;
+  hRY_car += (targetRY_car - hRY_car) * SK_CAR;
+
+  const hoverY  = Math.sin(nebT * 2.5) * 7;
+  const POS_LERP = 0.12;
+
+  IA_DATABASE.forEach((_, i) => {
+    const node = nodeEls[i];
+    if (!node || node.style.display === 'none') return;
+    const delta  = i - currentIndex;
+    const adelta = Math.abs(delta);
+    const state  = nodeStates[i];
+
+    state.x     += (state.targetX     - state.x)     * POS_LERP;
+    state.z     += (state.targetZ     - state.z)     * POS_LERP;
+    state.ry    += (state.targetRY    - state.ry)    * POS_LERP;
+    state.scale += (state.targetScale - state.scale) * POS_LERP;
+
+    const attenuation = Math.max(0, 1 - adelta * 0.25);
+    const tiltX   = (hRX_car * 28) * attenuation;
+    const tiltY   = (hRY_car * 28) * attenuation;
+    const nodeHY  = delta === 0 ? hoverY : 0;
+
+    /* Sin transition en transform → 60fps sin tirones en trackpad */
+    node.style.transform =
+      `translate3d(${state.x.toFixed(2)}px,${nodeHY.toFixed(2)}px,${state.z.toFixed(2)}px) ` +
+      `rotateY(${(state.ry + tiltY).toFixed(3)}deg) rotateX(${tiltX.toFixed(3)}deg) ` +
+      `scale(${state.scale.toFixed(4)})`;
+  });
+
+  activeNebulas.forEach(nebula => {
+    nebula.uniforms.u_time.value = nebT;
+    nebula.mesh.rotation.y = nebT * 0.15 + hRY_car;
+    nebula.mesh.rotation.x = hRX_car;
+    nebula.renderer.render(nebula.scene, nebula.camera);
+  });
+
+  if (detailEntry) detailEntry.render(nebT);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑨ INIT
+══════════════════════════════════════════════════════════════════ */
+initUniverse();
+
+/* ══════════════════════════════════════════════════════════════════════
+   BITVERSUS — CINEMÁTICA DE DESCENSO (bloque autónomo)
+   ──────────────────────────────────────────────────────────────────────
+   INSERCIÓN: pega este bloque JUSTO DESPUÉS de la línea:
+       initUniverse();
+   y JUSTO ANTES de la línea:
+       tick();
+   en la sección ⑨ INIT del <script> principal.
+
+   DEPENDENCIAS (ya presentes en el documento):
+     • gsap (window.gsap, cargado desde cdnjs)
+     • heroUniforms.u_amp   — uniform del Vertex Shader del hero
+     • shutter              — element #shutter
+     • hint                 — element #hint
+     • nodeEls[]            — array de .nebula-node (relleno por initUniverse)
+     • shutterFullyOpen     — bandera que habilita controles del carrusel
+     • FADE_END, SHUTTER_RANGE — constantes de scroll ya definidas
+   ══════════════════════════════════════════════════════════════════════ */
+
+(function initCinematic() {
+
+  /* ── 0. Refs a elementos de UI periféricos ── */
+  const nebHeader   = document.getElementById('neb-header');
+  const nebFooter   = document.getElementById('neb-footer');
+  const kbHint      = document.querySelector('.keyboard-hint');
+  const btnBack     = document.getElementById('btnBackToHero');
+
+  /* ── 1. Estado inicial de los nodos — invisibles y en posición ──
+     CRÍTICO: gsap.set() aquí corre DESPUÉS de initUniverse() y renderCarousel().
+     renderCarousel() ya puso los nodeStates correctos; el tick() ya está
+     ejecutando lerp hacia esas posiciones. El único problema es que
+     renderCarousel() también escribió opacity directamente en los nodos.
+     Lo anulamos aquí con gsap.set ANTES del primer tick() post-initUniverse.
+
+     NO animamos scale con GSAP porque tick() sobreescribe node.style.transform
+     cada frame con el transform completo del carrusel. En su lugar dejamos
+     que el carrusel calcule su propio scale y solo controlamos opacity. */
+  nodeEls.forEach(node => {
+    gsap.set(node, { opacity: 0, visibility: 'hidden', force3D: true });
+  });
+
+  /* UI periférica invisible al inicio */
+  if (nebHeader) gsap.set(nebHeader, { opacity: 0, pointerEvents: 'none' });
+  if (nebFooter) gsap.set(nebFooter, { opacity: 0, pointerEvents: 'none' });
+  if (kbHint)    gsap.set(kbHint,    { opacity: 0, pointerEvents: 'none' });
+  if (btnBack)   gsap.set(btnBack,   { opacity: 0, pointerEvents: 'none' });
+
+  /* ── 2. Variables de estado ── */
+  let cinemaActive   = false;
+  let cinemaComplete = false;
+  let scrollLocked   = false;
+  let nebulaLocked   = false;   /* true cuando estamos anclados abajo post-cinemática */
+
+  const TOTAL_RANGE  = FADE_END + SHUTTER_RANGE;   /* 1600 px */
+  const CINEMA_START = 1;
+
+  /* ── 3. Lock / unlock del scroll nativo ── */
+  function lockScroll() {
+    if (scrollLocked) return;
+    scrollLocked = true;
+    document.body.style.overflow = 'hidden';
+  }
+  function unlockScroll() {
+    if (!scrollLocked) return;
+    scrollLocked = false;
+    document.body.style.overflow = '';
+  }
+
+  /* ── 4. Bloqueo permanente post-cinemática (anclaje inferior) ──
+     Previene wheel y touch hacia arriba. El keydown hacia arriba
+     también se bloquea aquí — el listener de teclado del carrusel
+     ya comprueba shutterFullyOpen, así que no hay conflicto. */
+  function enableNebulaLock() {
+    if (nebulaLocked) return;
+    nebulaLocked = true;
+
+    /* Wheel: bloqueamos delta negativo (scroll hacia arriba) */
+    window.addEventListener('wheel', preventScrollUp, { passive: false });
+    /* Touch */
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove',  preventTouchUp, { passive: false });
+  }
+
+  let _touchStartY = 0;
+  function onTouchStart(e) { _touchStartY = e.touches[0].clientY; }
+  function preventScrollUp(e) {
+    /* Si el detailsView está abierto, el scroll lo gestiona su contenedor interno */
+    if (detailsView && detailsView.classList.contains('visible')) return;
+    if (e.deltaY < 0) e.preventDefault();   /* bloquear rueda hacia arriba */
+  }
+  function preventTouchUp(e) {
+    if (detailsView && detailsView.classList.contains('visible')) return;
+    const dy = e.touches[0].clientY - _touchStartY;
+    if (dy > 0) e.preventDefault();   /* swipe hacia abajo = scroll arriba → bloqueado */
+  }
+
+  function disableNebulaLock() {
+    if (!nebulaLocked) return;
+    nebulaLocked = false;
+    window.removeEventListener('wheel',      preventScrollUp);
+    window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener('touchmove',  preventTouchUp);
+  }
+
+  /* ── 5. Proxy que GSAP anima — sets actualizan el DOM en cada frame ── */
+  const cinProxy = {
+    _prog: 0,
+    get prog() { return this._prog; },
+    set prog(p) {
+      this._prog = p;
+
+      /* ── A. Hero: fade completo al 55% del recorrido total ──
+         Usar 0.55 como divisor = hero desaparece en el 55 % del viaje,
+         MUCHO antes de que el shutter lo cubra. Esto elimina el flicker. */
+      const HERO_FADE_FRACTION = 0.55;
+      const fadeProg = Math.min(p / HERO_FADE_FRACTION, 1);
+      const heroOpacity = 1 - fadeProg;
+
+      heroSection.style.opacity = String(Math.max(0, heroOpacity));
+
+      /* Forzar visibility:hidden en cuanto el fade termina (p >= 55%) —
+         esto garantiza que NINGÚN elemento del hero quede visible detrás
+         del shutter, sin importar el compositing del navegador. */
+      if (fadeProg >= 1) {
+        heroSection.style.visibility = 'hidden';
+        /* También cortamos el renderizado del shader del hero */
+        heroSection.style.pointerEvents = 'none';
+      } else {
+        heroSection.style.visibility = 'visible';
+        heroSection.style.pointerEvents = '';
+      }
+
+      /* ── B. Distorsión del hero (fricción espacial — máx al 55%) ── */
+      heroUniforms.u_amp.value = 0.52 + fadeProg * 0.58;
+
+      /* ── C. Persiana — recorrido completo lineal ── */
+      /* El shutter empieza a moverse en p=0.625 (= FADE_END/TOTAL_RANGE)
+         para que hero ya sea invisible cuando la persiana sube. */
+      const SHUTTER_START_PROG = FADE_END / TOTAL_RANGE;   /* ~0.625 */
+      const shutterProg = Math.min(
+        Math.max(0, (p - SHUTTER_START_PROG) / (1 - SHUTTER_START_PROG)),
+        1
+      );
+      shutter.style.transform = `translateY(${-shutterProg * 100}vh)`;
+
+      /* ── D. Hint ── */
+      hint.style.opacity = p > 0.15 ? '0' : '0.22';
+    }
+  };
+
+  /* ── 6. Timeline de descenso ── */
+  function buildDescentTimeline() {
+    const DURATION = 2.6;
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { ease: 'none' },
+      onComplete: onDescentComplete,
+    });
+
+    /* t=0 inmediato: hero ya en estado oculto (refuerzo doble) */
+    tl.set(heroSection, {
+      opacity: 0,
+      visibility: 'hidden',
+      pointerEvents: 'none',
+    }, 0);
+
+    /* Progreso principal lineal — gestiona shutter + distorsión shader */
+    tl.to(cinProxy, { prog: 1, duration: DURATION, ease: 'none' }, 0);
+
+    /* Revelar #carousel3D ANTES del fade-in de nodos.
+       El carousel tiene visibility:hidden en CSS; lo mostramos aquí
+       cuando el shutter ya ha empezado a subir y ha cubierto el hero.
+       En este momento tick() ya habrá hecho varios frames de lerp con
+       los estados correctos, así que no habrá amontonamiento. */
+    tl.set(carousel, { visibility: 'visible' }, DURATION * 0.45);
+
+    /* Nodos: fade-in + visibility al 52% de la duración.
+       NO animamos scale porque tick() controla el transform completo del nodo.
+       Solo opacity y visibility, que son propiedades independientes del transform. */
+    tl.to(nodeEls, {
+      opacity: (i) => {
+        const delta = i - currentIndex;
+        return delta === 0 ? 1 : Math.abs(delta) <= 2 ? 0.6 : 0;
+      },
+      visibility: 'visible',
+      duration: DURATION * 0.44,
+      ease:     'power2.out',
+      stagger:  0.032,
+    }, DURATION * 0.52);
+
+    /* UI periférica al 85% */
+    const uiEls = [nebHeader, nebFooter, kbHint, btnBack].filter(Boolean);
+    if (uiEls.length) {
+      tl.to(uiEls, {
+        opacity:  1,
+        duration: DURATION * 0.18,
+        ease:     'power1.in',
+        onComplete() {
+          uiEls.forEach(el => {
+            el.style.pointerEvents = '';
+            if (el.id === 'btnBackToHero') el.classList.add('visible');
+          });
+        }
+      }, DURATION * 0.85);
+    }
+
+    return tl;
+  }
+
+  /* ── 7. Timeline de ascenso inverso (botón "Subir a portada") ── */
+  function buildAscentTimeline(onDone) {
+    const DURATION = 2.0;
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { ease: 'none' },
+      onComplete: onDone,
+    });
+
+    /* Activar cinemaRunning al arrancar para que tick() ceda el control */
+    tl.call(() => {
+      cinemaRunning        = true;
+      carouselOpacityReady = false;   /* renderCarousel no toca opacity durante ascenso */
+    }, [], 0);
+
+    /* t=0: ocultar nodos y carousel inmediatamente */
+    tl.set(nodeEls,   { opacity: 0, visibility: 'hidden' }, 0);
+    tl.set(carousel,  { visibility: 'hidden' }, 0);
+
+    /* Progreso invertido: 1 → 0, lineal — controla shutter y shader */
+    tl.to(cinProxy, { prog: 0, duration: DURATION, ease: 'none' }, 0);
+
+    /* Ocultar UI periférica inmediatamente */
+    const uiEls = [nebHeader, nebFooter, kbHint, btnBack].filter(Boolean);
+    if (uiEls.length) {
+      tl.to(uiEls, { opacity: 0, duration: DURATION * 0.15, ease: 'power1.out' }, 0);
+    }
+
+    return tl;
+  }
+
+  let descentTL = null;
+
+  /* ── 8. Callback de fin de descenso ── */
+  function onDescentComplete() {
+    cinemaComplete = true;
+    cinemaActive   = false;
+    cinemaRunning  = false;   /* ← liberar tick() para su lógica normal (carrusel abierto) */
+
+    /* Estado final garantizado */
+    cinProxy.prog = 1;
+    shutterFullyOpen     = true;
+    carouselOpacityReady = true;   /* ← renderCarousel() ya puede tocar opacity */
+    unlockScroll();
+
+    /* Anclar scroll post-cinemática */
+    enableNebulaLock();
+    window.scrollTo({ top: TOTAL_RANGE, behavior: 'instant' });
+
+    /* Restaurar u_amp suavemente */
+    gsap.to(heroUniforms.u_amp, { value: 0.52, duration: 1.2, ease: 'power2.out' });
+
+    /* Mostrar botón de retorno */
+    if (btnBack) {
+      btnBack.classList.add('visible');
+      btnBack.style.pointerEvents = '';
+    }
+  }
+
+  /* ── 9. Lógica del botón "Subir a portada" ── */
+  if (btnBack) {
+    btnBack.addEventListener('click', () => {
+      if (!cinemaComplete) return;
+
+      /* Deshabilitar visualmente el botón durante el ascenso */
+      btnBack.classList.add('returning');
+      btnBack.classList.remove('visible');
+
+      /* Desactivar el anclaje inferior antes de animar */
+      disableNebulaLock();
+      shutterFullyOpen = false;
+      cinemaComplete   = false;
+      cinemaActive     = true;    /* bloquear nuevo trigger de descenso */
+
+      /* Cerrar vistas abiertas si las hubiera */
+      if (detailsView && detailsView.classList.contains('visible')) {
+        cerrarVistaDetalle();
+      }
+
+      /* Ocultar UI del header */
+      if (nebHeader) { nebHeader.style.pointerEvents = 'none'; }
+      if (nebFooter) { nebFooter.style.pointerEvents = 'none'; }
+      if (kbHint)    { kbHint.style.pointerEvents    = 'none'; }
+
+      /* Construir y lanzar el ascenso */
+      const ascentTL = buildAscentTimeline(() => {
+        /* Al terminar el ascenso: restaurar estado inicial completo */
+        cinemaComplete = false;
+        cinemaActive   = false;
+        cinemaRunning  = false;   /* tick() vuelve a gestionar hero y shutter */
+
+        /* Restaurar scroll al tope */
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        /* Resetear hero — tick() tomará el control desde aquí */
+        heroSection.style.opacity       = '1';
+        heroSection.style.visibility    = 'visible';
+        heroSection.style.pointerEvents = '';
+        heroUniforms.u_amp.value = 0.52;
+
+        /* Asegurar shutter en posición inicial */
+        shutter.style.transform = 'translateY(0vh)';
+
+        /* Limpiar clase returning del botón */
+        if (btnBack) {
+          btnBack.classList.remove('returning');
+          btnBack.style.pointerEvents = 'none';
+        }
+
+        /* Resetear descentTL para permitir un nuevo viaje */
+        descentTL = null;
+
+        /* Hint de scroll vuelve a ser visible */
+        hint.style.opacity = '0.22';
+
+        /* Reactivar listener de descenso */
+        window.addEventListener('scroll', onFirstScroll, { passive: true });
+      });
+
+      ascentTL.play();
+    });
+  }
+
+  /* ── 10. Activación al primer scroll ── */
+  function onFirstScroll() {
+    if (cinemaActive || cinemaComplete) return;
+    if (window.scrollY < CINEMA_START) return;
+
+    cinemaActive  = true;
+    cinemaRunning = true;   /* ← tick() cede control de hero/shutter/hint a GSAP */
+
+    /* FRAME 0 — antes de que GSAP arranque:
+       Forzar hero a opacity:0 + visibility:hidden + pointerEvents:none de forma
+       SINCRÓNICA para que el primer frame de la TL no muestre el hero. */
+    heroSection.style.opacity      = '0';
+    heroSection.style.visibility   = 'hidden';
+    heroSection.style.pointerEvents = 'none';
+
+    /* Asegurar que el hint también desaparece inmediatamente */
+    hint.style.opacity = '0';
+
+    /* Eliminar este listener */
+    window.removeEventListener('scroll', onFirstScroll);
+
+    descentTL = buildDescentTimeline();
+    lockScroll();
+
+    const startProg = Math.min(window.scrollY / TOTAL_RANGE, 0.02);
+    descentTL.progress(startProg).play();
+
+    /* Al final del viaje, sincronizar el scrollY nativo al tope */
+    gsap.delayedCall(descentTL.duration() * (1 - startProg), () => {
+      window.scrollTo({ top: TOTAL_RANGE, behavior: 'instant' });
+    });
+  }
+
+  window.addEventListener('scroll', onFirstScroll, { passive: true });
+
+  /* Wheel durante el viaje cinematográfico — ignorar */
+  window.addEventListener('wheel', (e) => {
+    if (cinemaActive) e.preventDefault();
+  }, { passive: false });
+
+  /* Touch durante el viaje cinematográfico — ignorar */
+  window.addEventListener('touchmove', (e) => {
+    if (cinemaActive) e.preventDefault();
+  }, { passive: false });
+
+})();
+/* ── FIN DEL BLOQUE CINEMÁTICO v2 ── */
+
+
+tick();
+
+/* ══════════════════════════════════════════════════════════════════
+   ⑩ CUSTOM CURSOR — sistema de inercia física estilo Active Theory
+══════════════════════════════════════════════════════════════════ */
+(function initCursor() {
+  const outer = document.getElementById('cursor-outer');
+  const inner = document.getElementById('cursor-inner');
+  if (!outer || !inner) return;
+
+  /* Posición del cursor (lerp target) */
+  let mx = window.innerWidth  / 2;
+  let my = window.innerHeight / 2;
+  /* Posición actual del anillo exterior (con lag de inercia) */
+  let cx = mx, cy = my;
+
+  /* Actualiza la posición del mouse instantáneamente para el punto */
+  document.addEventListener('mousemove', (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+  }, { passive: true });
+
+  /* Hover — amplía el cursor exterior sobre elementos interactivos */
+  const hoverTargets = 'a, button, .nebula-node, .tool-card, .btn-ficha-tecnica, .sort-select, .sort-direction-btn, .profile-cta, #btnCloseDetails, #btnCloseProfile';
+
+  function bindHoverTargets() {
+    document.querySelectorAll(hoverTargets).forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+  }
+  bindHoverTargets();
+
+  /* Re-enlaza targets cuando se inyecta HTML dinámico (catálogo, fichas) */
+  const mutationObs = new MutationObserver(() => {
+    document.body.classList.remove('cursor-hover');
+    bindHoverTargets();
+  });
+  mutationObs.observe(document.body, { childList: true, subtree: true });
+
+  /* Click — efecto de escala en el punto interior */
+  document.addEventListener('mousedown', () => document.body.classList.add('cursor-active'));
+  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-active'));
+
+  /* Ocultar cursor fuera de la ventana */
+  document.addEventListener('mouseleave', () => {
+    outer.style.opacity = '0';
+    inner.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    outer.style.opacity = '1';
+    inner.style.opacity = '1';
+  });
+
+  /* Loop de animación — lerp suavizado (factor 0.12 = inercia media) */
+  function cursorLoop() {
+    cx += (mx - cx) * 0.12;
+    cy += (my - cy) * 0.12;
+
+    /* El anillo exterior sigue con inercia */
+    outer.style.left = cx + 'px';
+    outer.style.top  = cy + 'px';
+
+    /* El punto interior sigue el mouse instantáneamente */
+    inner.style.left = mx + 'px';
+    inner.style.top  = my + 'px';
+
+    requestAnimationFrame(cursorLoop);
+  }
+  cursorLoop();
+})();
+
+})();
+</script>
+</body>
+</html>
