@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>BitVersus — Free Financial Tools for the Modern Hustler</title>
+<meta name="description" content="Free calculators for budgeting, gig-economy earnings, and AI-powered side hustle ideas.">
+<style>
+  :root{
+    --bg-main:#FFFFFF;
+    --bg-soft:#F8F9FA;
+    --accent:#10B981;
+    --accent-dark:#0B9D6E;
+    --accent-soft:#E7F9F1;
+    --text-main:#1E293B;
+    --text-muted:#5B6B82;
+    --border:#E5E9EF;
+    --footer-bg:#1E293B;
+    --footer-text:#CBD5E1;
+    --radius:14px;
+    --shadow:0 4px 16px rgba(30,41,59,0.06);
+    --shadow-hover:0 10px 24px rgba(16,185,129,0.18);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-main);
+    color:var(--text-main);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding-top:60px;
+    padding-bottom:var(--footer-h, 90px);
+  }
+  h1,h2,h3{margin:0 0 8px 0;line-height:1.2;}
+  p{margin:0 0 12px 0;color:var(--text-muted);}
+  button{font-family:inherit;}
+  .hidden{display:none !important;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 16px;}
+
+  /* ---------- HEADER ---------- */
+  header.site-header{
+    position:fixed;top:0;left:0;right:0;
+    height:60px;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;
+    z-index:1000;
+  }
+  .logo{
+    font-weight:800;
+    font-size:1.05rem;
+    color:var(--text-main);
+    display:flex;align-items:center;gap:6px;
+    letter-spacing:-0.02em;
+  }
+  .logo span.coin{font-size:1.15rem;}
+  .logo img{
+    height:28px;width:28px;
+    object-fit:contain;
+    display:block;
+  }
+  .hamburger{
+    width:44px;height:44px;
+    border:none;background:transparent;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    gap:5px;cursor:pointer;
+    border-radius:10px;
+  }
+  .hamburger:active{background:var(--bg-soft);}
+  .hamburger span{
+    width:22px;height:2px;background:var(--text-main);border-radius:2px;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  .mobile-menu{
+    position:fixed;top:60px;left:0;right:0;
+    background:var(--bg-main);
+    border-bottom:1px solid var(--border);
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;
+    max-height:0;overflow:hidden;
+    transition:max-height .3s ease;
+    z-index:999;
+  }
+  .mobile-menu.open{max-height:260px;}
+  .mobile-menu button{
+    text-align:left;
+    padding:16px;
+    border:none;background:none;
+    font-size:1rem;font-weight:600;color:var(--text-main);
+    border-bottom:1px solid var(--border);
+    min-height:48px;
+  }
+  .mobile-menu button:active{background:var(--bg-soft);}
+
+  /* ---------- ADS PLACEHOLDER (espacio reservado, sin estilo visible) ---------- */
+  .ads-placeholder{
+    width:100%;
+    margin:24px 0;
+    min-height:90px;
+  }
+  .ads-placeholder.tall{min-height:250px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:36px 0 8px 0;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:1.7rem;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  .hero p{
+    font-size:0.98rem;
+    max-width:480px;
+    margin:0 auto 4px auto;
+  }
+
+  /* ---------- TOOL CARDS ---------- */
+  .tool-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+    padding:8px 0 24px 0;
+  }
+  .tool-card{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    display:flex;flex-direction:column;gap:6px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .tool-card .icon{font-size:1.6rem;}
+  .tool-card h3{font-size:1.08rem;}
+  .tool-card p{font-size:0.9rem;margin-bottom:14px;}
+  .tool-card button{
+    margin-top:auto;
+    min-height:48px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    font-weight:700;
+    font-size:0.95rem;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .tool-card button:hover{background:var(--accent-dark);}
+  .tool-card button:active{transform:scale(0.98);}
+  .tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);}
+
+  /* ---------- TOOL VIEWS ---------- */
+  .tool-view{padding:28px 0 40px 0;}
+  .back-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:none;border:none;
+    color:var(--text-muted);
+    font-size:0.9rem;font-weight:600;
+    padding:8px 0;min-height:44px;
+    cursor:pointer;
+  }
+  .tool-view h2{font-size:1.3rem;}
+  .tool-view > p.tool-sub{font-size:0.92rem;margin-bottom:20px;}
+
+  label.field-label{
+    display:block;font-weight:700;font-size:0.88rem;
+    margin-bottom:8px;color:var(--text-main);
+  }
+  input[type="number"], select{
+    width:100%;
+    min-height:52px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:0 14px;
+    font-size:1.05rem;
+    color:var(--text-main);
+    background:#fff;
+    margin-bottom:18px;
+  }
+  input[type="number"]:focus, select:focus{
+    outline:none;border-color:var(--accent);
+  }
+  .btn-primary{
+    width:100%;
+    min-height:52px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    font-weight:700;
+    font-size:1rem;
+    border-radius:12px;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-primary:active{transform:scale(0.98);}
+
+  /* ---------- BUDGET RESULTS ---------- */
+  .result-cards{
+    display:flex;flex-direction:column;gap:12px;
+    margin-top:24px;
+    animation:fadeUp .4s ease;
+  }
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .result-card{
+    background:var(--accent-soft);
+    border:1px solid #C9F0DF;
+    border-radius:12px;
+    padding:16px;
+  }
+  .result-card .r-top{display:flex;justify-content:space-between;align-items:baseline;}
+  .result-card .r-label{font-weight:800;font-size:0.95rem;color:var(--accent-dark);}
+  .result-card .r-amount{font-weight:800;font-size:1.15rem;color:var(--text-main);}
+  .result-card .r-desc{font-size:0.85rem;margin:6px 0 0 0;}
+
+  /* ---------- BUDGET: LOCATION AUTOCOMPLETE ---------- */
+  .autocomplete-wrap{
+    position:relative;
+    margin-bottom:18px;
+  }
+  .autocomplete-wrap input{
+    margin-bottom:0;
+  }
+  .autocomplete-list{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;right:0;
+    background:#fff;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    box-shadow:var(--shadow-hover);
+    max-height:280px;
+    overflow-y:auto;
+    z-index:50;
+  }
+  .autocomplete-item{
+    display:flex;align-items:center;gap:10px;
+    min-height:48px;
+    padding:8px 14px;
+    cursor:pointer;
+    border-bottom:1px solid var(--border);
+  }
+  .autocomplete-item:last-child{border-bottom:none;}
+  .autocomplete-item:hover, .autocomplete-item:active{background:var(--accent-soft);}
+  .autocomplete-item .ac-flag{font-size:1.15rem;flex-shrink:0;}
+  .autocomplete-item .ac-text{display:flex;flex-direction:column;}
+  .autocomplete-item .ac-city{font-size:0.92rem;font-weight:700;color:var(--text-main);}
+  .autocomplete-item .ac-country{font-size:0.74rem;color:var(--text-muted);}
+  .autocomplete-empty{
+    padding:14px;font-size:0.85rem;color:var(--text-muted);text-align:center;
+  }
+
+  /* ---------- BUDGET: LOCATION BADGE & CHECKLIST ---------- */
+  .location-badge{
+    border-radius:10px;
+    padding:14px;
+    margin-top:16px;
+    display:flex;gap:10px;
+    align-items:flex-start;
+  }
+  .location-badge.badge-safe{background:var(--accent-soft);border:1px solid #C9F0DF;}
+  .location-badge.badge-alert{background:#FEF2F2;border:1px solid #FCC9C9;}
+  .location-badge .badge-icon{font-size:1.2rem;line-height:1.3;}
+  .location-badge .badge-title{
+    font-weight:800;font-size:0.9rem;margin:0 0 4px 0;
+  }
+  .location-badge.badge-safe .badge-title{color:var(--accent-dark);}
+  .location-badge.badge-alert .badge-title{color:#B91C1C;}
+  .location-badge .badge-msg{
+    font-size:0.83rem;margin:0;
+  }
+  .location-badge.badge-safe .badge-msg{color:#0B7A54;}
+  .location-badge.badge-alert .badge-msg{color:#991B1B;}
+  .checklist-title{
+    font-size:0.85rem;font-weight:700;
+    margin:22px 0 10px 0;color:var(--text-main);
+  }
+  .checklist{
+    list-style:none;margin:0;padding:0;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .checklist li{
+    display:flex;align-items:flex-start;gap:8px;
+    font-size:0.85rem;color:var(--text-muted);
+    background:var(--bg-soft);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+  .checklist li .chk{
+    color:var(--accent);font-weight:800;flex-shrink:0;
+  }
+
+  /* ---------- QUIZ ---------- */
+  .progress-track{
+    width:100%;height:6px;background:var(--bg-soft);
+    border-radius:6px;overflow:hidden;margin-bottom:24px;
+  }
+  .progress-fill{
+    height:100%;background:var(--accent);
+    width:0%;transition:width .35s ease;
+  }
+  .quiz-question h2{font-size:1.15rem;margin-bottom:18px;}
+  .quiz-options{display:flex;flex-direction:column;gap:10px;}
+  .quiz-options button{
+    min-height:52px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    border-radius:12px;
+    font-size:0.98rem;font-weight:600;
+    color:var(--text-main);
+    cursor:pointer;
+    text-align:left;
+    padding:0 16px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .quiz-options button:hover{border-color:var(--accent);background:var(--accent-soft);}
+  .quiz-options button:active{transform:scale(0.99);}
+
+  .skill-card-btn{
+    display:flex;align-items:center;gap:12px;
+  }
+  .skill-card-btn .skill-icon{
+    font-size:1.3rem;flex-shrink:0;
+  }
+  .skill-card-btn .skill-text{
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .skill-card-btn .skill-sub{
+    font-size:0.76rem;font-weight:400;color:var(--text-muted);
+  }
+
+  .quiz-loading{
+    text-align:center;
+    padding:40px 0;
+  }
+  .spinner{
+    width:44px;height:44px;
+    border:4px solid var(--bg-soft);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    margin:0 auto 20px auto;
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .quiz-loading p{font-weight:600;color:var(--text-main);}
+
+  .quiz-result h2{font-size:1.2rem;color:var(--accent-dark);}
+  .tips-list{margin:18px 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .tips-list li{
+    background:var(--bg-soft);
+    border-radius:10px;
+    padding:14px;
+    font-size:0.9rem;
+    display:flex;gap:10px;
+  }
+  .tips-list li .tip-num{
+    flex-shrink:0;
+    width:26px;height:26px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#fff;font-weight:800;font-size:0.8rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .retake-btn{
+    margin-top:8px;
+    background:none;border:1.5px solid var(--border);
+    color:var(--text-main);font-weight:600;
+    min-height:48px;border-radius:10px;width:100%;
+    cursor:pointer;
+  }
+
+  /* ---------- GIG ESTIMATOR ---------- */
+  .earnings-result{
+    background:var(--accent-soft);
+    border:1px solid #C9F0DF;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+    margin-top:22px;
+    animation:fadeUp .4s ease;
+  }
+  .earnings-result .big-num{
+    font-size:1.7rem;font-weight:800;color:var(--accent-dark);
+    display:block;margin-bottom:4px;
+  }
+  .earnings-note{
+    font-size:0.78rem;
+    color:var(--text-muted);
+    margin-top:14px;
+  }
+
+  .toggle-group{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .toggle-group button{
+    flex:1;
+    min-height:56px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    border-radius:10px;
+    padding:8px 10px;
+    cursor:pointer;
+    text-align:left;
+    font-size:0.82rem;
+    font-weight:700;
+    color:var(--text-main);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .toggle-group button .toggle-sub{
+    display:block;font-size:0.72rem;font-weight:400;color:var(--text-muted);margin-top:2px;
+  }
+  .toggle-group button.active{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+    color:var(--accent-dark);
+  }
+  .toggle-group button.active .toggle-sub{color:var(--accent-dark);}
+
+  .breakdown-list{
+    list-style:none;margin:16px 0 0 0;padding:0;
+    display:flex;flex-direction:column;gap:0;
+    border-top:1px solid #C9F0DF;
+  }
+  .breakdown-list li{
+    display:flex;justify-content:space-between;
+    font-size:0.85rem;
+    padding:10px 0;
+    border-bottom:1px solid #C9F0DF;
+    color:var(--text-main);
+  }
+  .breakdown-list li span:first-child{color:var(--text-muted);}
+  .breakdown-list li span:last-child{font-weight:700;}
+
+  .breakdown-list li.net-row{
+    border-bottom:none;
+    padding-top:14px;
+  }
+  .breakdown-list li.net-row span:first-child{
+    font-weight:700;color:var(--text-main);font-size:0.95rem;
+  }
+  .breakdown-list li.net-row span:last-child{
+    font-size:1.25rem;font-weight:800;color:var(--accent-dark);
+  }
+
+  /* ---------- REUSABLE INFO / TIP NOTE ---------- */
+  .info-note{
+    background:#FFF7ED;
+    border:1px solid #FDE1B8;
+    border-radius:10px;
+    padding:14px;
+    margin-top:16px;
+    display:flex;gap:10px;
+    align-items:flex-start;
+  }
+  .info-note .note-icon{font-size:1.1rem;line-height:1.3;}
+  .info-note p{font-size:0.83rem;color:#92400E;margin:0;}
+
+  /* ---------- FOOTER (fijo abajo) ---------- */
+  footer.site-footer{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:var(--footer-bg);
+    color:var(--footer-text);
+    padding:14px 16px;
+    z-index:900;
+    box-shadow:0 -4px 16px rgba(0,0,0,0.12);
+  }
+  .footer-links{
+    display:flex;flex-wrap:wrap;gap:14px;
+    margin-bottom:6px;
+  }
+  .footer-links a{
+    color:var(--footer-text);
+    font-size:0.8rem;
+    text-decoration:none;
+    min-height:32px;
+    display:inline-flex;align-items:center;
+  }
+  .footer-links a:hover{color:#fff;text-decoration:underline;}
+  .footer-copy{font-size:0.68rem;color:#8592A6;line-height:1.4;margin:0;}
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(15,23,42,0.55);
+    display:flex;align-items:flex-end;justify-content:center;
+    z-index:2000;
+  }
+  .modal-box{
+    background:#fff;
+    width:100%;max-width:640px;
+    border-radius:18px 18px 0 0;
+    padding:24px 20px 32px 20px;
+    max-height:80vh;overflow-y:auto;
+  }
+  .modal-box h3{font-size:1.1rem;}
+  .modal-updated{
+    font-size:0.75rem;color:var(--text-muted);
+    margin:-6px 0 16px 0;font-style:italic;
+  }
+  #modalBody{font-size:0.86rem;color:var(--text-muted);}
+  #modalBody p{
+    font-size:0.86rem;color:var(--text-muted);
+    margin:0 0 14px 0;line-height:1.6;
+  }
+  #modalBody p:last-child{margin-bottom:0;}
+  #modalBody strong{color:var(--text-main);}
+  #modalBody a{color:var(--accent-dark);font-weight:600;}
+  .modal-close{
+    width:100%;min-height:48px;
+    border:none;background:var(--bg-soft);
+    border-radius:10px;font-weight:700;
+    color:var(--text-main);margin-top:16px;cursor:pointer;
+  }
+
+  @media (min-width:640px){
+    .tool-grid{grid-template-columns:1fr 1fr 1fr;}
+    .hero h1{font-size:2.1rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="logo"><img src="data:image/png;base64,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" alt="BitVersus logo">BitVersus</div>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<nav class="mobile-menu" id="mobileMenu">
+  <button data-target="home">🏠 Home</button>
+  <button data-target="budget">🧮 Student Budgeter</button>
+  <button data-target="quiz">🔮 Side Hustle Finder</button>
+  <button data-target="gig">🚗 Gig Pay Estimator</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============ HOME / DASHBOARD ============ -->
+  <section id="view-home">
+    <div class="hero">
+      <h1>Free Financial Tools for the Modern Hustler</h1>
+      <p>Calculate your budget, discover AI-powered business ideas, and estimate your gig-economy earnings in seconds.</p>
+    </div>
+
+    <!-- AdSense: Horizontal banner below hero -->
+    <div class="ads-placeholder"></div>
+
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="icon">🧮</div>
+        <h3>Student Budgeter</h3>
+        <p>Split your income the smart way with the 50/30/20 rule.</p>
+        <button data-target="budget">Try the Calculator</button>
+      </div>
+      <div class="tool-card">
+        <div class="icon">🔮</div>
+        <h3>Side Hustle Finder</h3>
+        <p>Answer 3 quick questions and get an AI-style business match.</p>
+        <button data-target="quiz">Take the Quiz</button>
+      </div>
+      <div class="tool-card">
+        <div class="icon">🚗</div>
+        <h3>Gig Pay Estimator</h3>
+        <p>See what you could earn weekly on top gig platforms.</p>
+        <button data-target="gig">Estimate Earnings</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TOOL 1: BUDGETER ============ -->
+  <section id="view-budget" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back</button>
+    <h2>Student Budgeter</h2>
+    <p class="tool-sub">The 50/30/20 rule splits your income into needs, wants, and savings — adjusted for your living situation and real local cost of living.</p>
+
+    <label class="field-label" for="livingProfile">Select your living situation</label>
+    <select id="livingProfile">
+      <option value="dorm">Living with Parents / Dorm</option>
+      <option value="renting_entire">Renting an Apartment (Entire Place)</option>
+      <option value="renting_shared">Renting a Shared Apartment / Roommate (Piso Compartido)</option>
+    </select>
+
+    <label class="field-label" for="locationInput">Search Your City (US, UK & Spain)</label>
+    <div class="autocomplete-wrap">
+      <input type="text" id="locationInput" placeholder="e.g. Madrid, London, Austin..." autocomplete="off">
+      <div class="autocomplete-list hidden" id="autocompleteList"></div>
+    </div>
+
+    <label class="field-label" for="radiusSelect">Commute / Search Radius</label>
+    <select id="radiusSelect">
+      <option value="center">Within City Center</option>
+      <option value="5mi">5 miles / 8 km</option>
+      <option value="15mi">15 miles / 24 km</option>
+      <option value="30mi">30+ miles / 48 km (Suburbs/Outskirts)</option>
+    </select>
+
+    <label class="field-label" for="incomeInput">Enter Your Total Monthly Income ($)</label>
+    <input type="number" id="incomeInput" placeholder="0.00" min="0" inputmode="decimal">
+    <button class="btn-primary" id="calcBudgetBtn">Calculate My Budget</button>
+
+    <div class="result-cards hidden" id="budgetResults">
+      <div class="result-card">
+        <div class="r-top"><span class="r-label" id="needsLabel">50% Needs</span><span class="r-amount" id="needsAmt">$0</span></div>
+        <p class="r-desc">Rent, groceries, bills, and essentials.</p>
+      </div>
+      <div class="result-card">
+        <div class="r-top"><span class="r-label" id="wantsLabel">30% Wants</span><span class="r-amount" id="wantsAmt">$0</span></div>
+        <p class="r-desc">Dining out, hobbies, shopping, and fun.</p>
+      </div>
+      <div class="result-card">
+        <div class="r-top"><span class="r-label" id="savingsLabel">20% Savings</span><span class="r-amount" id="savingsAmt">$0</span></div>
+        <p class="r-desc">Emergency fund, investing, and debt payoff.</p>
+      </div>
+
+      <div class="location-badge hidden" id="locationBadge">
+        <span class="badge-icon" id="badgeIcon">🟢</span>
+        <div>
+          <p class="badge-title" id="badgeTitle">Safe Tier</p>
+          <p class="badge-msg" id="badgeMsg"></p>
+        </div>
+      </div>
+
+      <p class="checklist-title" id="checklistTitle">Typical monthly expenses for this profile</p>
+      <ul class="checklist" id="profileChecklist"></ul>
+    </div>
+
+    <!-- AdSense: Square block below budget results -->
+    <div class="ads-placeholder" id="budgetAdSlot"></div>
+  </section>
+
+  <!-- ============ TOOL 2: QUIZ ============ -->
+  <section id="view-quiz" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back</button>
+
+    <div class="progress-track"><div class="progress-fill" id="quizProgress"></div></div>
+
+    <!-- Question 1 -->
+    <div class="quiz-question" id="q1">
+      <h2>How many hours per week can you dedicate?</h2>
+      <div class="quiz-options">
+        <button data-q="1" data-val="1-5 hours">1-5 hours</button>
+        <button data-q="1" data-val="5-10 hours">5-10 hours</button>
+        <button data-q="1" data-val="10+ hours">10+ hours</button>
+        <button data-q="1" data-val="Weekends Only">Weekends Only</button>
+      </div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="quiz-question hidden" id="q2">
+      <h2>What is your initial starting budget?</h2>
+      <div class="quiz-options">
+        <button data-q="2" data-val="$0 (Absolute Free)">$0 (Absolute Free)</button>
+        <button data-q="2" data-val="Under $50">Under $50</button>
+        <button data-q="2" data-val="$100 - $500">$100 - $500</button>
+        <button data-q="2" data-val="$500+">$500+</button>
+      </div>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="quiz-question hidden" id="q3">
+      <h2>Select your primary skill set:</h2>
+      <div class="quiz-options">
+        <button class="skill-card-btn" data-q="3" data-val="Video & Audio Editing">
+          <span class="skill-icon">🎬</span>
+          <span class="skill-text">Video & Audio Editing<span class="skill-sub">Cutting, mixing, motion graphics</span></span>
+        </button>
+        <button class="skill-card-btn" data-q="3" data-val="Writing & Translation">
+          <span class="skill-icon">✍️</span>
+          <span class="skill-text">Writing & Translation<span class="skill-sub">Copywriting, bilingual work</span></span>
+        </button>
+        <button class="skill-card-btn" data-q="3" data-val="Coding, Tech & AI Prompting">
+          <span class="skill-icon">💻</span>
+          <span class="skill-text">Coding, Tech & AI Prompting<span class="skill-sub">Scripts, apps, prompt work</span></span>
+        </button>
+        <button class="skill-card-btn" data-q="3" data-val="E-commerce & Selling Physical Products">
+          <span class="skill-icon">📦</span>
+          <span class="skill-text">E-commerce & Selling<span class="skill-sub">Physical products, resale</span></span>
+        </button>
+        <button class="skill-card-btn" data-q="3" data-val="Driving, Logistics & Manual Tasks">
+          <span class="skill-icon">🚚</span>
+          <span class="skill-text">Driving, Logistics & Manual Tasks<span class="skill-sub">Delivery, errands, labor</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="quiz-loading hidden" id="quizLoading">
+      <div class="spinner"></div>
+      <p id="quizLoadingText">Analyzing capital constraints...</p>
+      <!-- AdSense: High-impact block during processing screen -->
+      <div class="ads-placeholder tall"></div>
+    </div>
+
+    <!-- Result -->
+    <div class="quiz-result hidden" id="quizResult">
+      <h2 id="quizResultTitle">Your Perfect Match</h2>
+      <ul class="tips-list" id="quizTipsList"></ul>
+      <!-- AdSense: End of business tips -->
+      <div class="ads-placeholder"></div>
+      <button class="retake-btn" id="retakeQuizBtn">Retake the Quiz</button>
+    </div>
+  </section>
+
+  <!-- ============ TOOL 3: GIG ESTIMATOR ============ -->
+  <section id="view-gig" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back</button>
+    <h2>Gig Pay Estimator</h2>
+    <p class="tool-sub">Pick a platform, your city, and weekly hours to see a localized, detailed earnings estimate.</p>
+
+    <label class="field-label" for="platformSelect">Platform</label>
+    <select id="platformSelect">
+      <option value="uber">Uber / Lyft (Rideshare)</option>
+      <option value="delivery">DoorDash / UberEats / Instacart (Delivery)</option>
+      <option value="etsy">Etsy / Amazon Handmade (Crafts)</option>
+      <option value="shopify">Shopify Dropshipping / Print-on-Demand</option>
+      <option value="fiverr">Fiverr / Upwork (Digital Freelancing)</option>
+      <option value="rover">Rover / Wag (Pet Sitting)</option>
+      <option value="taskrabbit">TaskRabbit (Home Assembly & Repair)</option>
+      <option value="airbnb">Airbnb / Subletting (Host)</option>
+    </select>
+
+    <label class="field-label" for="gigLocationInput">Search Your City (US, UK & Spain)</label>
+    <div class="autocomplete-wrap">
+      <input type="text" id="gigLocationInput" placeholder="e.g. Chicago, Manchester, Bilbao..." autocomplete="off">
+      <div class="autocomplete-list hidden" id="gigAutocompleteList"></div>
+    </div>
+
+    <label class="field-label" for="gigRadiusSelect">Operating Radius</label>
+    <select id="gigRadiusSelect">
+      <option value="center">City Center / High-Demand Core</option>
+      <option value="within15">Within 15 miles / 24 km</option>
+      <option value="suburbs">Suburbs & Outskirts</option>
+    </select>
+
+    <label class="field-label" for="hoursInput">Estimated Hours per Week</label>
+    <input type="number" id="hoursInput" placeholder="0" min="0" inputmode="numeric">
+
+    <button class="btn-primary" id="calcGigBtn">Estimate Earnings</button>
+
+    <div class="earnings-result hidden" id="gigResult">
+      <span class="big-num" id="gigAmount">$0/week</span>
+      <p id="gigLocationSummary">gross, before expenses</p>
+
+      <div class="info-note hidden" id="suburbTip">
+        <span class="note-icon">💡</span>
+        <p>Tip: In suburban areas, factor in higher fuel/battery depreciation due to longer distances between orders.</p>
+      </div>
+
+      <ul class="breakdown-list" id="gigBreakdown">
+        <li><span>Base Hourly Rate</span><span id="bdBaseRate">$0/hr</span></li>
+        <li><span>Market Tier Adjustment</span><span id="bdTier">—</span></li>
+        <li><span>Operating Radius Adjustment</span><span id="bdRadius">—</span></li>
+        <li><span>Adjusted Hourly Rate</span><span id="bdAdjustedRate">$0/hr</span></li>
+        <li><span>Weekly Hours</span><span id="bdHours">0</span></li>
+        <li><span>Gross Weekly Earnings</span><span id="bdGross">$0</span></li>
+        <li><span>Estimated Expenses</span><span id="bdExpenses">$0</span></li>
+        <li class="net-row"><span>Net Estimated Weekly Take-Home</span><span id="bdNet">$0</span></li>
+      </ul>
+
+      <p class="earnings-note">Estimate based on average gross hourly rates for your selected city and radius. Actual pay varies by demand and vehicle/material costs. Expense deductions are estimates only and do not account for income taxes — set aside additional funds for self-employment tax.</p>
+    </div>
+
+    <!-- AdSense: Below earnings calculation -->
+    <div class="ads-placeholder"></div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="#" data-modal="privacy">Privacy Policy</a>
+    <a href="#" data-modal="terms">Terms of Service</a>
+  </div>
+  <p class="footer-copy">© 2026 BitVersus. Created for educational and financial planning purposes. All rights reserved.</p>
+</footer>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <p class="modal-updated" id="modalUpdated"></p>
+    <div id="modalBody"></div>
+    <button class="modal-close" id="modalCloseBtn">Close</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- FIXED FOOTER HEIGHT SYNC ---------- */
+  var siteFooter = document.querySelector(".site-footer");
+  function syncFooterHeight(){
+    if(!siteFooter) return;
+    var h = siteFooter.offsetHeight;
+    document.documentElement.style.setProperty("--footer-h", (h + 12) + "px");
+  }
+  syncFooterHeight();
+  window.addEventListener("resize", syncFooterHeight);
+  window.addEventListener("load", syncFooterHeight);
+
+  /* ---------- NAVIGATION ---------- */
+  var views = ["home","budget","quiz","gig"];
+  var hamburgerBtn = document.getElementById("hamburgerBtn");
+  var mobileMenu = document.getElementById("mobileMenu");
+
+  function showView(name){
+    views.forEach(function(v){
+      var el = document.getElementById("view-" + v);
+      if(!el) return;
+      if(v === name){ el.classList.remove("hidden"); }
+      else { el.classList.add("hidden"); }
+    });
+    window.scrollTo({top:0, behavior:"smooth"});
+    closeMenu();
+  }
+
+  function openMenu(){
+    mobileMenu.classList.add("open");
+    hamburgerBtn.classList.add("open");
+  }
+  function closeMenu(){
+    mobileMenu.classList.remove("open");
+    hamburgerBtn.classList.remove("open");
+  }
+  hamburgerBtn.addEventListener("click", function(){
+    if(mobileMenu.classList.contains("open")) closeMenu(); else openMenu();
+  });
+
+  document.querySelectorAll("[data-target]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      showView(btn.getAttribute("data-target"));
+    });
+  });
+
+  /* ---------- TOOL 1: BUDGET CALCULATOR (LOCATION-AWARE) ---------- */
+  var calcBudgetBtn = document.getElementById("calcBudgetBtn");
+  var incomeInput = document.getElementById("incomeInput");
+  var livingProfile = document.getElementById("livingProfile");
+  var budgetResults = document.getElementById("budgetResults");
+  var locationInput = document.getElementById("locationInput");
+  var autocompleteList = document.getElementById("autocompleteList");
+  var radiusSelect = document.getElementById("radiusSelect");
+  var locationBadge = document.getElementById("locationBadge");
+  var selectedCityKey = null;
+
+  /* Baseline monthly "Needs" cost (USD-equivalent) for an entire apartment, city center */
+  var cityData = {
+    "New York City":  { flag:"🇺🇸", country:"United States", baselineNeeds:2600 },
+    "Los Angeles":    { flag:"🇺🇸", country:"United States", baselineNeeds:2200 },
+    "Chicago":        { flag:"🇺🇸", country:"United States", baselineNeeds:1700 },
+    "Miami":          { flag:"🇺🇸", country:"United States", baselineNeeds:1900 },
+    "San Francisco":  { flag:"🇺🇸", country:"United States", baselineNeeds:2800 },
+    "Austin":         { flag:"🇺🇸", country:"United States", baselineNeeds:1650 },
+    "Boston":         { flag:"🇺🇸", country:"United States", baselineNeeds:2300 },
+    "Seattle":        { flag:"🇺🇸", country:"United States", baselineNeeds:2100 },
+    "London":         { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:2500 },
+    "Manchester":     { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1500 },
+    "Birmingham":     { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1350 },
+    "Edinburgh":      { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1600 },
+    "Liverpool":      { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1300 },
+    "Bristol":        { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1700 },
+    "Glasgow":        { flag:"🇬🇧", country:"United Kingdom", baselineNeeds:1350 },
+    "Madrid":         { flag:"🇪🇸", country:"Spain", baselineNeeds:1600 },
+    "Barcelona":      { flag:"🇪🇸", country:"Spain", baselineNeeds:1650 },
+    "Valencia":       { flag:"🇪🇸", country:"Spain", baselineNeeds:1250 },
+    "Sevilla":        { flag:"🇪🇸", country:"Spain", baselineNeeds:1150 },
+    "Málaga":         { flag:"🇪🇸", country:"Spain", baselineNeeds:1200 },
+    "Zaragoza":       { flag:"🇪🇸", country:"Spain", baselineNeeds:1050 },
+    "Bilbao":         { flag:"🇪🇸", country:"Spain", baselineNeeds:1300 }
+  };
+
+  /* Radius Factor: further out lowers the rent share but adds a transport allowance */
+  var radiusConfig = {
+    "center": { label:"Within City Center",              rentMultiplier:1.00, transportAdd:0  },
+    "5mi":    { label:"5 miles / 8 km",                   rentMultiplier:0.92, transportAdd:15 },
+    "15mi":   { label:"15 miles / 24 km",                 rentMultiplier:0.78, transportAdd:40 },
+    "30mi":   { label:"30+ miles / 48 km (Suburbs/Outskirts)", rentMultiplier:0.62, transportAdd:75 }
+  };
+
+  /* Living situation: base 50/30/20-style split + housing cost factor vs an entire-place baseline */
+  var situationConfig = {
+    dorm:            { needsPct:0.40, wantsPct:0.30, savingsPct:0.30, housingFactor:0.15, label:"Living with Parents / Dorm",
+      checklist:["Meal plan / groceries top-up","Phone bill","Personal supplies & subscriptions","Transportation (bus pass / gas money)"] },
+    renting_entire:  { needsPct:0.50, wantsPct:0.30, savingsPct:0.20, housingFactor:1.00, label:"an entire apartment",
+      checklist:["Rent & utilities","Groceries","Internet & phone","Transportation / gas","Renters insurance"] },
+    renting_shared:  { needsPct:0.45, wantsPct:0.30, savingsPct:0.25, housingFactor:0.55, label:"a shared apartment",
+      checklist:["Your share of rent & utilities","Groceries","Internet & phone (split)","Transportation / gas","Renters insurance (split)"] }
+  };
+
+  /* ---- Autocomplete ---- */
+  function renderAutocomplete(query){
+    var q = query.trim().toLowerCase();
+    autocompleteList.innerHTML = "";
+
+    if(q.length === 0){
+      autocompleteList.classList.add("hidden");
+      return;
+    }
+
+    var matches = Object.keys(cityData).filter(function(city){
+      return city.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 6);
+
+    if(matches.length === 0){
+      var empty = document.createElement("div");
+      empty.className = "autocomplete-empty";
+      empty.textContent = "No matching city — try New York, London, Madrid...";
+      autocompleteList.appendChild(empty);
+    } else {
+      matches.forEach(function(city){
+        var data = cityData[city];
+        var item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = '<span class="ac-flag">' + data.flag + '</span>' +
+          '<span class="ac-text"><span class="ac-city">' + city + '</span>' +
+          '<span class="ac-country">' + data.country + '</span></span>';
+        item.addEventListener("click", function(){
+          locationInput.value = city;
+          selectedCityKey = city;
+          autocompleteList.classList.add("hidden");
+          locationInput.style.borderColor = "";
+        });
+        autocompleteList.appendChild(item);
+      });
+    }
+    autocompleteList.classList.remove("hidden");
+  }
+
+  locationInput.addEventListener("input", function(){
+    selectedCityKey = null;
+    renderAutocomplete(locationInput.value);
+  });
+  locationInput.addEventListener("focus", function(){
+    if(locationInput.value.trim().length > 0) renderAutocomplete(locationInput.value);
+  });
+  document.addEventListener("click", function(e){
+    if(!e.target.closest(".autocomplete-wrap")){
+      autocompleteList.classList.add("hidden");
+    }
+  });
+
+  /* ---- Core calculation ---- */
+  calcBudgetBtn.addEventListener("click", function(){
+    var income = parseFloat(incomeInput.value);
+    if(isNaN(income) || income <= 0){
+      incomeInput.focus();
+      incomeInput.style.borderColor = "#EF4444";
+      return;
+    }
+    incomeInput.style.borderColor = "";
+
+    if(!selectedCityKey || !cityData[selectedCityKey]){
+      locationInput.focus();
+      locationInput.style.borderColor = "#EF4444";
+      renderAutocomplete(locationInput.value);
+      return;
+    }
+    locationInput.style.borderColor = "";
+
+    var situationKey = livingProfile.value;
+    var situation = situationConfig[situationKey];
+    var city = cityData[selectedCityKey];
+    var radiusKey = radiusSelect.value;
+    var radius = radiusConfig[radiusKey];
+
+    /* Split the city baseline into a housing share and a fixed-essentials share */
+    var housingPortion = city.baselineNeeds * 0.70;
+    var otherEssentials = city.baselineNeeds * 0.30;
+
+    var adjustedHousing = housingPortion * situation.housingFactor * radius.rentMultiplier;
+    var minNeeds = adjustedHousing + otherEssentials + radius.transportAdd;
+
+    /* Tier 1 cities push the recommended split toward more Needs, less Wants */
+    var isTier1 = city.baselineNeeds >= 1800;
+    var pct = { needsPct: situation.needsPct, wantsPct: situation.wantsPct, savingsPct: situation.savingsPct };
+    if(isTier1 && situationKey === "renting_entire"){
+      pct = { needsPct:0.60, wantsPct:0.20, savingsPct:0.20 };
+    } else if(isTier1 && situationKey === "renting_shared"){
+      pct = { needsPct:0.50, wantsPct:0.25, savingsPct:0.25 };
+    }
+
+    var needs = income * pct.needsPct;
+    var wants = income * pct.wantsPct;
+    var savings = income * pct.savingsPct;
+
+    document.getElementById("needsLabel").textContent = Math.round(pct.needsPct * 100) + "% Needs";
+    document.getElementById("wantsLabel").textContent = Math.round(pct.wantsPct * 100) + "% Wants";
+    document.getElementById("savingsLabel").textContent = Math.round(pct.savingsPct * 100) + "% Savings";
+
+    document.getElementById("needsAmt").textContent = formatMoney(needs);
+    document.getElementById("wantsAmt").textContent = formatMoney(wants);
+    document.getElementById("savingsAmt").textContent = formatMoney(savings);
+
+    /* ---- Safe Tier vs Alert Tier badge ---- */
+    var badgeIcon = document.getElementById("badgeIcon");
+    var badgeTitle = document.getElementById("badgeTitle");
+    var badgeMsg = document.getElementById("badgeMsg");
+
+    if(needs >= minNeeds){
+      locationBadge.className = "location-badge badge-safe";
+      badgeIcon.textContent = "🟢";
+      badgeTitle.textContent = "Safe Tier";
+      badgeMsg.textContent = "Your Needs allocation of " + formatMoney(needs) + " comfortably covers the estimated minimum of " +
+        formatMoney(minNeeds) + "/mo to live in " + situation.label + " in " + selectedCityKey + " (" + radius.label + ").";
+    } else {
+      locationBadge.className = "location-badge badge-alert";
+      badgeIcon.textContent = "🔴";
+      badgeTitle.textContent = "Alert Tier";
+      badgeMsg.textContent = "Warning: " + formatMoney(needs) + " is below the minimum required budget (" + formatMoney(minNeeds) +
+        ") to safely live in " + situation.label + " within " + selectedCityKey + " " + radius.label + ". Consider choosing 'Shared Apartment' or expanding your radius to 15+ miles.";
+    }
+    locationBadge.classList.remove("hidden");
+
+    var checklistEl = document.getElementById("profileChecklist");
+    document.getElementById("checklistTitle").textContent = "Typical monthly expenses in " + selectedCityKey;
+    checklistEl.innerHTML = "";
+    situation.checklist.forEach(function(item){
+      var li = document.createElement("li");
+      li.innerHTML = '<span class="chk">✓</span><span>' + item + '</span>';
+      checklistEl.appendChild(li);
+    });
+
+    budgetResults.classList.remove("hidden");
+  });
+
+  function formatMoney(n){
+    return "$" + n.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  /* ---------- TOOL 2: SIDE HUSTLE QUIZ ---------- */
+  var quizProgress = document.getElementById("quizProgress");
+  var answers = {};
+  var totalQuestions = 3;
+
+  function setProgress(step){
+    var pct = (step / (totalQuestions + 1)) * 100; // +1 accounts for loading->result step
+    quizProgress.style.width = pct + "%";
+  }
+
+  document.querySelectorAll(".quiz-options button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var q = btn.getAttribute("data-q");
+      var val = btn.getAttribute("data-val");
+      answers["q" + q] = val;
+
+      document.getElementById("q" + q).classList.add("hidden");
+      setProgress(parseInt(q, 10));
+
+      if(q === "3"){
+        runQuizProcessing();
+      } else {
+        var next = parseInt(q, 10) + 1;
+        document.getElementById("q" + next).classList.remove("hidden");
+      }
+    });
+  });
+
+  var loadingMessages = [
+    "Analyzing capital constraints...",
+    "Matching skill profiles...",
+    "Cross-referencing US market CPMs..."
+  ];
+
+  function runQuizProcessing(){
+    var loadingTextEl = document.getElementById("quizLoadingText");
+    document.getElementById("quizLoading").classList.remove("hidden");
+
+    var msgIndex = 0;
+    loadingTextEl.textContent = loadingMessages[msgIndex];
+    var msgInterval = setInterval(function(){
+      msgIndex = (msgIndex + 1) % loadingMessages.length;
+      loadingTextEl.textContent = loadingMessages[msgIndex];
+    }, 800);
+
+    setTimeout(function(){
+      clearInterval(msgInterval);
+      document.getElementById("quizLoading").classList.add("hidden");
+      showQuizResult();
+      setProgress(4);
+    }, 2500);
+  }
+
+  /* Base match per skill (Question 3) */
+  var skillMatches = {
+    "Video & Audio Editing": {
+      title: "Your Perfect Match: Faceless Video Editor & Content Repurposer",
+      tips: [
+        "Offer editing services on Fiverr targeting podcasters and YouTubers who need short-form cutdowns.",
+        "Learn CapCut or Premiere's auto-caption tools to speed up delivery and raise your throughput.",
+        "Build a demo reel from 3 free sample edits of public creator content to attract your first paid client."
+      ]
+    },
+    "Writing & Translation": {
+      title: "Your Perfect Match: Freelance Copywriter & Bilingual Translator",
+      tips: [
+        "List your language pairs and niche (legal, medical, marketing) on Upwork to stand out in searches.",
+        "Pitch short blog posts or product descriptions to small e-commerce brands as a low-friction first gig.",
+        "Use a style guide for every client to keep tone consistent and win repeat work."
+      ]
+    },
+    "Coding, Tech & AI Prompting": {
+      title: "Your Perfect Match: No-Code Automation & AI Prompt Specialist",
+      tips: [
+        "Build small Zapier or Make automations for local businesses to save them manual data entry time.",
+        "Package reusable AI prompt templates for a specific niche (real estate listings, email marketing) and sell on Gumroad.",
+        "Take on small bug-fix or landing-page tasks on Upwork to build a track record fast."
+      ]
+    },
+    "E-commerce & Selling Physical Products": {
+      title: "Your Perfect Match: Print-on-Demand & Handmade Goods Seller",
+      tips: [
+        "Start with a print-on-demand store (no inventory) on Etsy before investing in bulk stock.",
+        "Source 3-5 trending product ideas from TikTok Shop and validate demand before committing budget.",
+        "Reinvest your first sales into professional product photos — they're the #1 driver of conversion."
+      ]
+    },
+    "Driving, Logistics & Manual Tasks": {
+      title: "Your Perfect Match: Multi-App Delivery Driver & TaskRabbit Tasker",
+      tips: [
+        "Run two delivery apps at once (e.g. DoorDash + Uber Eats) during peak hours to reduce idle time.",
+        "Sign up on TaskRabbit for furniture assembly — it pays more per hour than most delivery work.",
+        "Track mileage with a free app like Stride to maximize your tax deductions."
+      ]
+    }
+  };
+
+  /* Extra tip layered in based on starting budget (Question 2) */
+  var budgetTips = {
+    "$0 (Absolute Free)": "Starting budget: $0 — lean on free tools (CapCut, Canva, Google Docs) and platforms with no signup fees until you land your first paying client.",
+    "Under $50": "Starting budget: Under $50 — put it toward one paid tool or a domain/portfolio site rather than spreading it thin across many subscriptions.",
+    "$100 - $500": "Starting budget: $100–$500 — this is enough for starter inventory, a pro software license, or paid ads to test demand quickly.",
+    "$500+": "Starting budget: $500+ — consider bulk inventory, a premium tool stack, or a small paid ad budget to accelerate your first 90 days."
+  };
+
+  /* Time-availability note (Question 1) */
+  var timeTips = {
+    "1-5 hours": "With 1-5 hours/week, focus on one small, repeatable task instead of juggling multiple offers.",
+    "5-10 hours": "With 5-10 hours/week, you can realistically take on 2-3 small clients or listings at once.",
+    "10+ hours": "With 10+ hours/week, treat this like a part-time job — batch your work into scheduled blocks.",
+    "Weekends Only": "Since you're working Weekends Only, batch content creation or deliveries into Saturday/Sunday blocks and use weekday evenings just for client replies."
+  };
+
+  function showQuizResult(){
+    var skill = answers.q3;
+    var budget = answers.q2;
+    var time = answers.q1;
+
+    var match = skillMatches[skill] || skillMatches["Video & Audio Editing"];
+    document.getElementById("quizResultTitle").textContent = match.title;
+
+    var allTips = match.tips.slice();
+    if(timeTips[time]) allTips.push(timeTips[time]);
+    if(budgetTips[budget]) allTips.push(budgetTips[budget]);
+
+    var list = document.getElementById("quizTipsList");
+    list.innerHTML = "";
+    allTips.forEach(function(tip, i){
+      var li = document.createElement("li");
+      li.innerHTML = '<span class="tip-num">' + (i+1) + '</span><span>' + tip + '</span>';
+      list.appendChild(li);
+    });
+
+    document.getElementById("quizResult").classList.remove("hidden");
+  }
+
+  document.getElementById("retakeQuizBtn").addEventListener("click", function(){
+    answers = {};
+    document.getElementById("quizResult").classList.add("hidden");
+    document.getElementById("q1").classList.remove("hidden");
+    document.getElementById("q2").classList.add("hidden");
+    document.getElementById("q3").classList.add("hidden");
+    setProgress(0);
+  });
+
+  /* ---------- TOOL 3: GIG ESTIMATOR (LOCALIZED) ---------- */
+  var calcGigBtn = document.getElementById("calcGigBtn");
+  var platformSelect = document.getElementById("platformSelect");
+  var hoursInput = document.getElementById("hoursInput");
+  var gigResult = document.getElementById("gigResult");
+  var gigLocationInput = document.getElementById("gigLocationInput");
+  var gigAutocompleteList = document.getElementById("gigAutocompleteList");
+  var gigRadiusSelect = document.getElementById("gigRadiusSelect");
+  var suburbTip = document.getElementById("suburbTip");
+  var selectedGigCityKey = null;
+
+  /* City -> country + market tier (tier1 = highest demand/cost, tier3 = small town fallback) */
+  var gigCityData = {
+    "New York City":  { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier1" },
+    "Los Angeles":    { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier1" },
+    "San Francisco":  { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier1" },
+    "Boston":         { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier1" },
+    "Seattle":        { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier1" },
+    "Chicago":        { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier2" },
+    "Miami":          { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier2" },
+    "Austin":         { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier2" },
+    "Other US City / Small Town": { flag:"🇺🇸", country:"US", countryName:"United States", tier:"tier3" },
+
+    "London":         { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier1" },
+    "Manchester":     { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Birmingham":     { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Edinburgh":      { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Liverpool":      { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Bristol":        { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Glasgow":        { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier2" },
+    "Other UK City / Small Town": { flag:"🇬🇧", country:"UK", countryName:"United Kingdom", tier:"tier3" },
+
+    "Madrid":         { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier1" },
+    "Barcelona":      { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier1" },
+    "Valencia":       { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier2" },
+    "Sevilla":        { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier2" },
+    "Málaga":         { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier2" },
+    "Zaragoza":       { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier2" },
+    "Bilbao":         { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier2" },
+    "Other Spanish City": { flag:"🇪🇸", country:"ES", countryName:"Spain", tier:"tier3" }
+  };
+
+  /* National baseline gross hourly rate per platform, per country */
+  var platformRatesByCountry = {
+    US: { currency:"$", uber:22, delivery:18, etsy:24, shopify:28, fiverr:32, rover:16, taskrabbit:35, airbnb:40 },
+    UK: { currency:"£", uber:17, delivery:14, etsy:18, shopify:22, fiverr:25, rover:12, taskrabbit:27, airbnb:31 },
+    ES: { currency:"€", uber:11, delivery:9,  etsy:12, shopify:15, fiverr:17, rover:8,  taskrabbit:18, airbnb:21 }
+  };
+
+  var platformLabels = {
+    uber:"Uber / Lyft", delivery:"DoorDash / UberEats / Instacart", etsy:"Etsy / Amazon Handmade",
+    shopify:"Shopify Dropshipping / POD", fiverr:"Fiverr / Upwork", rover:"Rover / Wag",
+    taskrabbit:"TaskRabbit", airbnb:"Airbnb / Subletting"
+  };
+
+  /* Estimated expense deduction by platform type (driving = highest, digital = lowest) */
+  var expenseRates = { uber:0.25, delivery:0.22, etsy:0.18, shopify:0.20, fiverr:0.12, rover:0.15, taskrabbit:0.18, airbnb:0.20 };
+
+  var tierMultiplier = { tier1:1.10, tier2:1.00, tier3:0.85 };
+  var tierLabel = { tier1:"Tier 1 major city (+10%)", tier2:"Standard market (baseline)", tier3:"Small town / other (-15%)" };
+
+  var radiusMultiplier = { center:1.15, within15:1.00, suburbs:0.90 };
+  var radiusLabel = { center:"City Center / High-Demand Core (+15%)", within15:"Within 15 miles / 24 km (baseline)", suburbs:"Suburbs & Outskirts (-10%)" };
+
+  /* ---- Autocomplete (mirrors Tool 1 UX) ---- */
+  function renderGigAutocomplete(query){
+    var q = query.trim().toLowerCase();
+    gigAutocompleteList.innerHTML = "";
+
+    if(q.length === 0){
+      gigAutocompleteList.classList.add("hidden");
+      return;
+    }
+
+    var matches = Object.keys(gigCityData).filter(function(city){
+      return city.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 6);
+
+    if(matches.length === 0){
+      var empty = document.createElement("div");
+      empty.className = "autocomplete-empty";
+      empty.textContent = "No matching city — try Chicago, Manchester, Bilbao...";
+      gigAutocompleteList.appendChild(empty);
+    } else {
+      matches.forEach(function(city){
+        var data = gigCityData[city];
+        var item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = '<span class="ac-flag">' + data.flag + '</span>' +
+          '<span class="ac-text"><span class="ac-city">' + city + '</span>' +
+          '<span class="ac-country">' + data.countryName + '</span></span>';
+        item.addEventListener("click", function(){
+          gigLocationInput.value = city;
+          selectedGigCityKey = city;
+          gigAutocompleteList.classList.add("hidden");
+          gigLocationInput.style.borderColor = "";
+        });
+        gigAutocompleteList.appendChild(item);
+      });
+    }
+    gigAutocompleteList.classList.remove("hidden");
+  }
+
+  gigLocationInput.addEventListener("input", function(){
+    selectedGigCityKey = null;
+    renderGigAutocomplete(gigLocationInput.value);
+  });
+  gigLocationInput.addEventListener("focus", function(){
+    if(gigLocationInput.value.trim().length > 0) renderGigAutocomplete(gigLocationInput.value);
+  });
+  document.addEventListener("click", function(e){
+    if(!e.target.closest(".autocomplete-wrap")){
+      gigAutocompleteList.classList.add("hidden");
+    }
+  });
+
+  /* ---- Core calculation ---- */
+  calcGigBtn.addEventListener("click", function(){
+    var hours = parseFloat(hoursInput.value);
+    if(isNaN(hours) || hours <= 0){
+      hoursInput.focus();
+      hoursInput.style.borderColor = "#EF4444";
+      return;
+    }
+    hoursInput.style.borderColor = "";
+
+    if(!selectedGigCityKey || !gigCityData[selectedGigCityKey]){
+      gigLocationInput.focus();
+      gigLocationInput.style.borderColor = "#EF4444";
+      renderGigAutocomplete(gigLocationInput.value);
+      return;
+    }
+    gigLocationInput.style.borderColor = "";
+
+    var platformKey = platformSelect.value;
+    var city = gigCityData[selectedGigCityKey];
+    var countryRates = platformRatesByCountry[city.country];
+    var currency = countryRates.currency;
+    var baseRate = countryRates[platformKey];
+
+    var tMult = tierMultiplier[city.tier];
+    var radiusKey = gigRadiusSelect.value;
+    var rMult = radiusMultiplier[radiusKey];
+
+    var adjustedRate = baseRate * tMult * rMult;
+    var grossWeekly = adjustedRate * hours;
+
+    var expenseRate = expenseRates[platformKey];
+    var expenseAmount = grossWeekly * expenseRate;
+    var netWeekly = grossWeekly - expenseAmount;
+
+    function fmt(n){
+      return currency + n.toLocaleString("en-US", {maximumFractionDigits:2, minimumFractionDigits:0});
+    }
+
+    document.getElementById("gigAmount").textContent = fmt(Math.round(netWeekly)) + "/week net";
+    document.getElementById("gigLocationSummary").textContent =
+      platformLabels[platformKey] + " in " + selectedGigCityKey + " — take-home after estimated expenses";
+
+    document.getElementById("bdBaseRate").textContent = fmt(baseRate) + "/hr (" + city.countryName + " baseline)";
+    document.getElementById("bdTier").textContent = tierLabel[city.tier];
+    document.getElementById("bdRadius").textContent = radiusLabel[radiusKey];
+    document.getElementById("bdAdjustedRate").textContent = fmt(Math.round(adjustedRate * 100) / 100) + "/hr";
+    document.getElementById("bdHours").textContent = hours + " hrs/week";
+    document.getElementById("bdGross").textContent = fmt(Math.round(grossWeekly));
+    document.getElementById("bdExpenses").textContent = "-" + fmt(Math.round(expenseAmount)) + " (" + Math.round(expenseRate * 100) + "%)";
+    document.getElementById("bdNet").textContent = fmt(Math.round(netWeekly));
+
+    if(radiusKey === "suburbs"){
+      suburbTip.classList.remove("hidden");
+    } else {
+      suburbTip.classList.add("hidden");
+    }
+
+    gigResult.classList.remove("hidden");
+  });
+
+  /* ---------- FOOTER MODALS: PRIVACY POLICY & TERMS OF SERVICE ---------- */
+  var modalContent = {
+    privacy: {
+      title: "Privacy Policy",
+      updated: "Last Updated: July 2026",
+      body: [
+        "This Privacy Policy explains how BitVersus (\"we\", \"us\", or \"the Site\") handles information when you use our Student Budgeter, Side Hustle Finder, and Gig Pay Estimator tools. By using BitVersus, you agree to the practices described below.",
+
+        "<strong>Information We Collect.</strong> BitVersus does not directly collect, store, or request personally identifiable information (PII) such as your name, email address, or financial account details. All figures you enter — income, city, hours worked, or quiz answers — are processed locally in your browser via JavaScript solely to generate on-screen calculations. This input data is not transmitted to or stored on our servers.",
+
+        "<strong>Third-Party Advertising & Cookies.</strong> We partner with Google AdSense to serve advertisements on this Site. Google, as a third-party vendor, uses cookies (including the DART cookie) to serve ads to users based on their prior visits to BitVersus and other websites across the Internet. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to this Site and/or other sites you have visited. These cookies do not collect PII on our behalf and are governed by Google's own privacy policy.",
+
+        "<strong>User Opt-Out Rights.</strong> You may opt out of personalized advertising at any time. Visit <a href=\"https://adssettings.google.com\" target=\"_blank\" rel=\"noopener\">Google's Ads Settings</a> to manage how Google shows you ads, or visit <a href=\"https://www.aboutads.info\" target=\"_blank\" rel=\"noopener\">www.aboutads.info</a> to opt out of the use of cookies by third-party vendors for personalized advertising. Opting out does not mean you will see fewer ads — only that the ads you see may be less relevant to your interests.",
+
+        "<strong>International Compliance (US, UK & Spain).</strong> BitVersus is committed to complying with applicable data protection frameworks for our audience, including the California Consumer Privacy Act (CCPA) for California residents, the EU General Data Protection Regulation (GDPR) for users in the United Kingdom and European Union, and Spain's Ley Orgánica de Protección de Datos y Garantía de los Derechos Digitales (LOPDGDD). Where required, you have the right to access, rectify, or request deletion of any personal data processed by third parties on our behalf, and to lodge a complaint with your local data protection authority.",
+
+        "<strong>Cookie Preferences.</strong> You can manage or withdraw your cookie consent at any time through our Cookie Consent Banner (where shown) or through your browser's settings, which allow you to block or delete cookies. Note that disabling cookies may affect the functionality of certain features and advertisements on this Site.",
+
+        "<strong>Changes to This Policy.</strong> We may update this Privacy Policy periodically to reflect changes in our practices or applicable law. Continued use of BitVersus after changes are posted constitutes acceptance of the revised policy. Questions about this policy can be directed to our team through the contact details available on this Site."
+      ]
+    },
+    terms: {
+      title: "Terms of Service",
+      updated: "Last Updated: July 2026",
+      body: [
+        "<strong>Acceptance of Terms.</strong> By accessing, browsing, or using the calculators and tools available on BitVersus, you implicitly agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please discontinue use of the Site.",
+
+        "<strong>Description of Service.</strong> BitVersus provides free, browser-based tools — including the Student Budgeter, Side Hustle Finder, and Gig Pay Estimator — that generate mathematical estimates based on user-provided inputs and publicly available baseline data for select cities in the United States, United Kingdom, and Spain.",
+
+        "<strong>Financial & Educational Disclaimer.</strong> All tools on BitVersus are provided strictly for educational and general informational purposes only. The outputs generated are mathematical estimations based on baseline averages and simplified assumptions — they do not constitute professional financial, tax, investment, legal, or career advice of any kind. You should consult a qualified financial advisor, accountant, or relevant professional before making any financial or business decision.",
+
+        "<strong>Accuracy of Data.</strong> While we strive to provide realistic and reasonably current benchmark data for cost of living, gig-platform pay rates, and market conditions across the US, UK, and Spain, these figures (rent costs, hourly rates, expense percentages, and similar benchmarks) change constantly and can vary significantly by neighborhood, season, platform policy, and individual circumstances. BitVersus cannot and does not guarantee the 100% accuracy, completeness, or real-time precision of any estimation, calculation, or recommendation produced by our tools.",
+
+        "<strong>Limitation of Liability.</strong> To the fullest extent permitted by law, BitVersus and its operators, affiliates, and contributors shall not be held liable for any direct, indirect, incidental, or consequential financial decisions, losses, damages, or actions taken by any user in reliance on the tools, calculations, or recommendations provided by this Site. Use of BitVersus and any decisions made as a result are entirely at your own risk.",
+
+        "<strong>Intellectual Property.</strong> All content, branding, design, and underlying code of BitVersus are the property of their respective owners and may not be reproduced or redistributed without permission, except for personal, non-commercial use of the calculators as intended.",
+
+        "<strong>Changes to These Terms.</strong> We reserve the right to modify these Terms of Service at any time. Continued use of the Site following any changes constitutes your acceptance of the revised terms. These terms are governed in a manner consistent with applicable consumer protection laws in the user's jurisdiction, including the US, UK, and Spain."
+      ]
+    }
+  };
+
+  var modalOverlay = document.getElementById("modalOverlay");
+  document.querySelectorAll("[data-modal]").forEach(function(link){
+    link.addEventListener("click", function(e){
+      e.preventDefault();
+      var key = link.getAttribute("data-modal");
+      var content = modalContent[key];
+      document.getElementById("modalTitle").textContent = content.title;
+      document.getElementById("modalUpdated").textContent = content.updated || "";
+      document.getElementById("modalBody").innerHTML = content.body.map(function(paragraph){
+        return "<p>" + paragraph + "</p>";
+      }).join("");
+      modalOverlay.classList.remove("hidden");
+      document.querySelector(".modal-box").scrollTop = 0;
+    });
+  });
+  document.getElementById("modalCloseBtn").addEventListener("click", function(){
+    modalOverlay.classList.add("hidden");
+  });
+  modalOverlay.addEventListener("click", function(e){
+    if(e.target === modalOverlay) modalOverlay.classList.add("hidden");
+  });
+
+})();
+</script>
+</body>
+</html>
