@@ -89,11 +89,25 @@
     border-bottom:1px solid var(--border);
     box-shadow:var(--shadow);
     display:flex;flex-direction:column;
-    max-height:0;overflow:hidden;
+    max-height:0;
+    overflow-y:hidden;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
     transition:max-height .3s ease;
     z-index:999;
   }
-  .mobile-menu.open{max-height:260px;}
+  /* Altura máxima = alto de pantalla disponible menos el header fijo (60px) */
+  .mobile-menu.open{
+    max-height:calc(100vh - 60px);
+    overflow-y:auto;
+  }
+  /* dvh maneja mejor el redimensionado de la barra de direcciones en móviles modernos */
+  @supports (height:100dvh){
+    .mobile-menu.open{
+      max-height:calc(100dvh - 60px);
+    }
+  }
   .mobile-menu button{
     text-align:left;
     padding:16px;
@@ -1461,6 +1475,20 @@
   }
   hamburgerBtn.addEventListener("click", function(){
     if(mobileMenu.classList.contains("open")) closeMenu(); else openMenu();
+  });
+
+  /* Cerrar el menú móvil al hacer clic/tap fuera de él (fuera del nav y del botón hamburguesa) */
+  document.addEventListener("click", function(e){
+    if(!mobileMenu.classList.contains("open")) return;
+    if(mobileMenu.contains(e.target) || hamburgerBtn.contains(e.target)) return;
+    closeMenu();
+  });
+
+  /* Cerrar el menú móvil con la tecla Escape (accesibilidad) */
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && mobileMenu.classList.contains("open")){
+      closeMenu();
+    }
   });
 
   document.querySelectorAll("[data-target]").forEach(function(btn){
