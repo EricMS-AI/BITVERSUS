@@ -586,7 +586,137 @@
   }
   .article-body strong{color:var(--text-main);}
 
+  /* ---------- ABOUT US ---------- */
+  .about-hero{
+    text-align:center;
+    padding:8px 0 24px 0;
+  }
+  .about-hero .article-tag{margin-left:auto;margin-right:auto;}
+  .about-hero h1{font-size:1.5rem;}
+  .about-hero p{
+    font-size:0.95rem;max-width:480px;margin:0 auto;
+  }
+  .about-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin:22px 0 30px 0;
+  }
+  .about-stat{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 8px;
+    text-align:center;
+  }
+  .about-stat .num{
+    font-size:1.35rem;font-weight:800;color:var(--accent-dark);
+    display:block;line-height:1.1;margin-bottom:4px;
+  }
+  .about-stat .lbl{
+    font-size:0.72rem;color:var(--text-muted);font-weight:600;
+  }
+  .value-grid{
+    display:grid;grid-template-columns:1fr;
+    gap:14px;margin:20px 0 28px 0;
+  }
+  .value-card{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px;
+    display:flex;gap:14px;align-items:flex-start;
+  }
+  .value-card .v-icon{
+    font-size:1.4rem;
+    width:44px;height:44px;flex:0 0 44px;
+    background:var(--accent-soft);
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .value-card h3{font-size:0.98rem;margin-bottom:4px;}
+  .value-card p{font-size:0.87rem;margin-bottom:0;}
+  .about-cta{
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;
+    text-align:center;
+    margin-top:8px;
+  }
+  .about-cta h3{font-size:1.05rem;color:var(--text-main);}
+  .about-cta p{font-size:0.88rem;margin-bottom:16px;}
+
+  /* ---------- CONTACT ---------- */
+  .contact-grid{
+    display:grid;grid-template-columns:1fr;
+    gap:14px;
+    margin:20px 0 28px 0;
+  }
+  .contact-card{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    display:flex;gap:14px;align-items:center;
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .contact-card.is-link{cursor:pointer;text-decoration:none;color:inherit;}
+  .contact-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);}
+  .contact-card .c-icon{
+    font-size:1.3rem;
+    width:48px;height:48px;flex:0 0 48px;
+    background:var(--accent-soft);
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .contact-card h3{font-size:0.95rem;margin-bottom:2px;}
+  .contact-card p{font-size:0.85rem;margin-bottom:0;}
+  .contact-card .c-value{
+    font-size:0.85rem;color:var(--accent-dark);font-weight:700;
+    word-break:break-word;
+  }
+  .contact-form-wrap{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;
+    margin-top:8px;
+  }
+  .contact-form-wrap h3{font-size:1.02rem;margin-bottom:4px;}
+  .contact-form-wrap > p{font-size:0.87rem;margin-bottom:18px;}
+  input[type="text"], input[type="email"], textarea{
+    width:100%;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:1rem;
+    font-family:inherit;
+    color:var(--text-main);
+    background:#fff;
+    margin-bottom:16px;
+  }
+  input[type="text"], input[type="email"]{min-height:52px;}
+  textarea{min-height:110px;resize:vertical;line-height:1.4;}
+  input[type="text"]:focus, input[type="email"]:focus, textarea:focus{
+    outline:none;border-color:var(--accent);
+  }
+  .form-note{
+    font-size:0.76rem;color:var(--text-muted);
+    margin-top:12px;text-align:center;
+  }
+  .form-success{
+    display:flex;align-items:center;gap:10px;
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:16px;
+    font-size:0.88rem;color:var(--accent-dark);font-weight:600;
+  }
+
   @media (min-width:640px){
+    .value-grid{grid-template-columns:1fr 1fr;}
+    .contact-grid{grid-template-columns:1fr 1fr;}
     .tool-grid{grid-template-columns:1fr 1fr 1fr;}
     .blog-grid{grid-template-columns:1fr 1fr;}
     .hero h1{font-size:2.1rem;}
@@ -609,6 +739,8 @@
   <button data-target="quiz">🔮 Side Hustle Finder</button>
   <button data-target="gig">🚗 Gig Pay Estimator</button>
   <button data-target="blog">📰 Blog</button>
+  <button data-target="about">🏢 About Us</button>
+  <button data-target="contact">✉️ Contact</button>
 </nav>
 
 <main class="wrap">
@@ -1131,13 +1263,159 @@
     </article>
   </section>
 
+  <!-- ============ LEGAL: LEGAL NOTICE (AVISO LEGAL, ADSENSE-READY) ============ -->
+  <section id="view-legal" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back to Home</button>
+    <article class="article-header">
+      <span class="article-tag">Legal</span>
+      <h1 class="article-title">Legal Notice</h1>
+      <p class="article-meta">Last Updated: July 2026</p>
+
+      <div class="article-body">
+        <p>This Legal Notice sets out the identifying information, terms of use, and ownership details for BitVersus, in compliance with applicable transparency requirements for informational websites, including those required for participation in advertising programs such as Google AdSense.</p>
+
+        <h2>Site Identification</h2>
+        <p>BitVersus is an independent, self-funded informational website offering free budgeting calculators, gig-economy income estimators, and business-idea tools for entrepreneurs, students, and freelancers. The site is operated on an individual basis and is not affiliated with any bank, government agency, or financial institution. For identification or ownership inquiries, users may contact the site operator directly at <strong>bitversus1@gmail.com</strong>.</p>
+
+        <h2>Purpose and Scope of the Site</h2>
+        <p>BitVersus provides free, browser-based educational tools and general-interest articles related to personal finance, budgeting, and side-income opportunities. Nothing published on this Site should be interpreted as professional advice; see our <a href="#" data-target="terms">Terms of Service</a> for the full financial disclaimer.</p>
+
+        <h2>Intellectual Property</h2>
+        <p>The source code, visual design, logo, calculators, written articles, and overall structure of BitVersus are the intellectual property of the site operator, except where third-party libraries, fonts, or open-source components are used under their own respective licenses. Reproduction, distribution, or public communication of any substantial part of this Site's content, in whole or in part, without prior written authorization, is prohibited, except for personal and non-commercial use of the tools as intended.</p>
+
+        <h2>Hyperlinks Policy</h2>
+        <p>BitVersus may contain links to third-party websites for reference or informational purposes. These links are provided for the user's convenience only, and the site operator does not control, endorse, or assume responsibility for the content, accuracy, or practices of any linked external site. Access to any third-party website through a link on BitVersus is done entirely at the user's own risk and subject to that site's own terms and privacy policy.</p>
+
+        <h2>Advertising and Third-Party Services</h2>
+        <p>This Site displays advertising served through Google AdSense and may use other third-party analytics or advertising services. These providers may use cookies and similar technologies as described in our <a href="#" data-target="privacy">Privacy &amp; Cookies Policy</a>. The site operator has no control over the specific ads displayed by these networks at any given time.</p>
+
+        <h2>Limitation of Liability</h2>
+        <p>The site operator makes reasonable efforts to keep the information on BitVersus accurate and up to date, but does not warrant the completeness, reliability, or uninterrupted availability of the Site. To the fullest extent permitted by applicable law, the site operator shall not be liable for any damages, losses, or claims arising from the use, inability to use, or reliance on the content or tools provided on this Site.</p>
+
+        <h2>Applicable Law and Jurisdiction</h2>
+        <p>This Legal Notice, together with the Terms of Service and Privacy Policy, is governed in a manner consistent with applicable consumer protection and e-commerce regulations, including those of Spain and the European Union for users accessing the Site from within the EU, as well as the general legal frameworks applicable in the United Kingdom and United States for users in those jurisdictions. Any dispute arising from the use of this Site will, where legally permissible, be addressed under the laws applicable to the site operator's place of residence.</p>
+
+        <h2>Contact</h2>
+        <p>For any legal inquiries, takedown requests, or questions regarding this Legal Notice, please reach out via our <a href="#" data-target="contact">Contact page</a> or email us directly at <strong>bitversus1@gmail.com</strong>.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="view-contact" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back to Home</button>
+    <h1>Contact Us</h1>
+    <p class="tool-sub">Questions, feedback, or a tool you'd like to see next? We'd love to hear from you — a real person reads every message.</p>
+
+    <div class="contact-grid">
+      <a class="contact-card is-link" href="mailto:bitversus1@gmail.com">
+        <span class="c-icon">📧</span>
+        <div>
+          <h3>Email Us</h3>
+          <span class="c-value">bitversus1@gmail.com</span>
+        </div>
+      </a>
+      <div class="contact-card">
+        <span class="c-icon">⏱️</span>
+        <div>
+          <h3>Response Time</h3>
+          <p>Usually within 24–48 hours</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form-wrap">
+      <h3>Send Us a Message</h3>
+      <p>Fill out the form below and your email app will open with everything pre-filled — just hit send.</p>
+
+      <div class="form-success hidden" id="contactSuccess">
+        <span>✅</span><span>Your email app should now be open. Thanks for reaching out!</span>
+      </div>
+
+      <label class="field-label" for="contactName">Your Name</label>
+      <input type="text" id="contactName" placeholder="Jane Doe" autocomplete="name">
+
+      <label class="field-label" for="contactEmail">Your Email</label>
+      <input type="email" id="contactEmail" placeholder="jane@example.com" autocomplete="email">
+
+      <label class="field-label" for="contactSubject">Subject</label>
+      <input type="text" id="contactSubject" placeholder="Tool suggestion, bug report, question...">
+
+      <label class="field-label" for="contactMessage">Message</label>
+      <textarea id="contactMessage" placeholder="Tell us what's on your mind..."></textarea>
+
+      <button class="btn-primary" id="sendContactBtn">Send Message</button>
+      <p class="form-note">This form opens your default email app addressed to bitversus1@gmail.com — no data is stored or sent to our servers.</p>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT US ============ -->
+  <section id="view-about" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back to Home</button>
+    <div class="about-hero">
+      <span class="article-tag">Our Story</span>
+      <h1>About BitVersus</h1>
+      <p>We build free, no-nonsense financial tools so that students, freelancers, and gig workers can make confident money decisions — without a paywall, a login, or a sales pitch.</p>
+    </div>
+
+    <div class="about-stats">
+      <div class="about-stat"><span class="num">100%</span><span class="lbl">Free Tools</span></div>
+      <div class="about-stat"><span class="num">3</span><span class="lbl">Countries Covered</span></div>
+      <div class="about-stat"><span class="num">0</span><span class="lbl">Signups Required</span></div>
+    </div>
+
+    <h2 style="font-size:1.1rem;margin-bottom:4px;">Our Mission</h2>
+    <p style="font-size:0.92rem;line-height:1.7;">BitVersus was created out of a simple frustration: most financial tools online are either locked behind a subscription, cluttered with intrusive pop-ups, or too generic to be genuinely useful. We set out to build calculators that actually reflect real-world numbers — real rent costs, real gig-platform pay rates, real budgeting splits — for people building their financial independence from the ground up.</p>
+
+    <h2 style="font-size:1.1rem;margin:20px 0 4px 0;">Why Trust BitVersus</h2>
+    <div class="value-grid">
+      <div class="value-card">
+        <span class="v-icon">🔒</span>
+        <div>
+          <h3>Privacy by Design</h3>
+          <p>Your inputs — income, city, hours — are calculated locally in your browser. We don't collect or store your financial data on our servers.</p>
+        </div>
+      </div>
+      <div class="value-card">
+        <span class="v-icon">📊</span>
+        <div>
+          <h3>Transparent Calculations</h3>
+          <p>Every tool shows its full breakdown — base rates, adjustments, and assumptions — so you always know how a number was reached.</p>
+        </div>
+      </div>
+      <div class="value-card">
+        <span class="v-icon">🆓</span>
+        <div>
+          <h3>Free, No Catch</h3>
+          <p>No subscriptions, no premium tier, no email wall. Every calculator on BitVersus is, and will remain, free to use.</p>
+        </div>
+      </div>
+      <div class="value-card">
+        <span class="v-icon">🌍</span>
+        <div>
+          <h3>Built for Real Markets</h3>
+          <p>Our data reflects real cost-of-living and gig-platform benchmarks across the US, UK, and Spain — not generic, one-size-fits-all averages.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-cta">
+      <h3>Have a question or an idea for a new tool?</h3>
+      <p>We're a small, independent team and we read every message.</p>
+      <button class="btn-primary" data-target="contact" style="width:auto;padding:0 28px;">Get in Touch</button>
+    </div>
+  </section>
+
 </main>
 
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="footer-links">
+    <a href="#" data-target="about">About Us</a>
+    <a href="#" data-target="contact">Contact</a>
     <a href="#" data-target="privacy">Privacy Policy</a>
     <a href="#" data-target="terms">Terms of Service</a>
+    <a href="#" data-target="legal">Legal Notice</a>
   </div>
   <p class="footer-copy">© 2026 BitVersus. Created for educational and financial planning purposes. All rights reserved.</p>
 </footer>
@@ -1158,7 +1436,7 @@
   window.addEventListener("load", syncFooterHeight);
 
   /* ---------- NAVIGATION ---------- */
-  var views = ["home","budget","quiz","gig","blog","article1","article2","article3","article4","privacy","terms"];
+  var views = ["home","budget","quiz","gig","blog","article1","article2","article3","article4","privacy","terms","legal","contact","about"];
   var hamburgerBtn = document.getElementById("hamburgerBtn");
   var mobileMenu = document.getElementById("mobileMenu");
 
@@ -1707,6 +1985,39 @@
 
     gigResult.classList.remove("hidden");
   });
+
+  /* ---------- CONTACT FORM (MAILTO, NO BACKEND) ---------- */
+  var sendContactBtn = document.getElementById("sendContactBtn");
+  if(sendContactBtn){
+    sendContactBtn.addEventListener("click", function(){
+      var name = document.getElementById("contactName").value.trim();
+      var email = document.getElementById("contactEmail").value.trim();
+      var subject = document.getElementById("contactSubject").value.trim();
+      var message = document.getElementById("contactMessage").value.trim();
+
+      if(!message){
+        var msgField = document.getElementById("contactMessage");
+        msgField.focus();
+        msgField.style.borderColor = "#EF4444";
+        return;
+      }
+      document.getElementById("contactMessage").style.borderColor = "";
+
+      var mailSubject = subject || "Message from BitVersus site";
+      var bodyLines = [];
+      if(name) bodyLines.push("Name: " + name);
+      if(email) bodyLines.push("Email: " + email);
+      bodyLines.push("");
+      bodyLines.push(message);
+
+      var mailtoLink = "mailto:bitversus1@gmail.com" +
+        "?subject=" + encodeURIComponent(mailSubject) +
+        "&body=" + encodeURIComponent(bodyLines.join("\n"));
+
+      window.location.href = mailtoLink;
+      document.getElementById("contactSuccess").classList.remove("hidden");
+    });
+  }
 
   /* ---------- BLOG ARTICLES: SHOW STATIC SECTION (SPA NAV, NO CONTENT INJECTION) ---------- */
   document.querySelectorAll("[data-article]").forEach(function(btn){
