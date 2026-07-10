@@ -4,11 +4,11 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5469910155680109"
-     crossorigin="anonymous"></script>
+         crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>BitVersus — Free Financial Tools for the Modern Hustler</title>
-<meta name="description" content="Free calculators for budgeting, gig-economy earnings, and AI-powered side hustle ideas.">
+<title>BitVersus — Free Financial Tools for Entrepreneurs</title>
+<meta name="description" content="Free budgeting calculators, gig-economy income estimators, and AI-powered business ideas. Take control of your personal finances today.">
 <style>
   :root{
     --bg-main:#FFFFFF;
@@ -161,6 +161,49 @@
   .tool-card button:hover{background:var(--accent-dark);}
   .tool-card button:active{transform:scale(0.98);}
   .tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);}
+
+  /* ---------- BLOG ---------- */
+  .blog-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+    padding:8px 0 24px 0;
+  }
+  .blog-card{
+    background:var(--bg-soft);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    display:flex;flex-direction:column;gap:6px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .blog-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);}
+  .blog-card .blog-tag{
+    display:inline-block;
+    font-size:0.72rem;font-weight:700;
+    color:var(--accent-dark);
+    background:var(--accent-soft);
+    border-radius:6px;
+    padding:3px 8px;
+    margin-bottom:4px;
+    width:fit-content;
+  }
+  .blog-card h3{font-size:1.05rem;}
+  .blog-card p{font-size:0.88rem;margin-bottom:14px;}
+  .blog-card button{
+    margin-top:auto;
+    min-height:48px;
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    font-weight:700;
+    font-size:0.95rem;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .blog-card button:hover{background:var(--accent-dark);}
+  .blog-card button:active{transform:scale(0.98);}
 
   /* ---------- TOOL VIEWS ---------- */
   .tool-view{padding:28px 0 40px 0;}
@@ -531,8 +574,44 @@
     color:var(--text-main);margin-top:16px;cursor:pointer;
   }
 
+  /* ---------- BLOG ARTICLE (SINGLE POST VIEW) ---------- */
+  .article-header{margin:6px 0 20px 0;}
+  .article-tag{
+    display:inline-block;
+    font-size:0.72rem;font-weight:700;
+    color:var(--accent-dark);
+    background:var(--accent-soft);
+    border-radius:6px;
+    padding:3px 8px;
+    margin-bottom:10px;
+    width:fit-content;
+  }
+  .article-title{font-size:1.35rem;line-height:1.3;margin-bottom:6px;}
+  .article-meta{
+    font-size:0.78rem;color:var(--text-muted);
+    font-style:italic;margin:0;
+  }
+  .article-body p{
+    font-size:0.92rem;line-height:1.7;
+    margin-bottom:16px;color:var(--text-muted);
+  }
+  .article-body h3{
+    font-size:1.05rem;color:var(--text-main);
+    margin:26px 0 10px 0;
+  }
+  .article-body ul{
+    margin:0 0 18px 0;padding-left:20px;
+  }
+  .article-body ul li{
+    font-size:0.9rem;line-height:1.65;
+    color:var(--text-muted);
+    margin-bottom:8px;
+  }
+  .article-body strong{color:var(--text-main);}
+
   @media (min-width:640px){
     .tool-grid{grid-template-columns:1fr 1fr 1fr;}
+    .blog-grid{grid-template-columns:1fr 1fr;}
     .hero h1{font-size:2.1rem;}
   }
 </style>
@@ -552,6 +631,7 @@
   <button data-target="budget">🧮 Student Budgeter</button>
   <button data-target="quiz">🔮 Side Hustle Finder</button>
   <button data-target="gig">🚗 Gig Pay Estimator</button>
+  <button data-target="blog">📰 Blog</button>
 </nav>
 
 <main class="wrap">
@@ -785,6 +865,57 @@
     <div class="ads-placeholder"></div>
   </section>
 
+  <!-- ============ BLOG ============ -->
+  <section id="view-blog" class="tool-view hidden">
+    <button class="back-btn" data-target="home">← Back</button>
+    <h2>Financial Blog</h2>
+    <p class="tool-sub">Practical, in-depth advice on saving, gig-economy income, and side hustles to help you take control of your money.</p>
+
+    <div class="blog-grid">
+      <div class="blog-card">
+        <span class="blog-tag">Budgeting</span>
+        <h3>Advanced Budgeting and Saving Strategies to Beat Today's Inflation</h3>
+        <p>Rebuild your budget around real, current prices and automate savings so rising costs stop eating into your progress.</p>
+        <button data-article="article1">Read More</button>
+      </div>
+      <div class="blog-card">
+        <span class="blog-tag">Gig Economy</span>
+        <h3>Maximizing Your Net Income in the Gig Economy: Uber, DoorDash & Beyond</h3>
+        <p>Learn the difference between gross and net pay, control your operating costs, and handle self-employment taxes correctly.</p>
+        <button data-article="article2">Read More</button>
+      </div>
+      <div class="blog-card">
+        <span class="blog-tag">AI & Side Hustles</span>
+        <h3>Exponential Side Hustle Ideas Powered by AI in 2026</h3>
+        <p>Four AI-driven business models that let you scale income without scaling your hours, plus how to start each one this week.</p>
+        <button data-article="article3">Read More</button>
+      </div>
+      <div class="blog-card">
+        <span class="blog-tag">Side Hustle</span>
+        <h3>From Zero to Your First Client: Validate a Side Business Idea in 7 Days</h3>
+        <p>A realistic, day-by-day roadmap to test a real business idea and land your first paying client within one week.</p>
+        <button data-article="article4">Read More</button>
+      </div>
+    </div>
+
+    <!-- AdSense: Below blog list -->
+    <div class="ads-placeholder"></div>
+  </section>
+
+  <!-- ============ BLOG ARTICLE (SINGLE POST VIEW) ============ -->
+  <section id="view-article" class="tool-view hidden">
+    <button class="back-btn" data-target="blog">← Back to Blog</button>
+    <div class="article-header">
+      <span class="article-tag" id="articleTag"></span>
+      <h2 class="article-title" id="articleTitle"></h2>
+      <p class="article-meta" id="articleMeta"></p>
+    </div>
+    <div class="article-body" id="articleBody"></div>
+
+    <!-- AdSense: Below full article body (high-value placement for long-form content) -->
+    <div class="ads-placeholder tall"></div>
+  </section>
+
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -822,7 +953,7 @@
   window.addEventListener("load", syncFooterHeight);
 
   /* ---------- NAVIGATION ---------- */
-  var views = ["home","budget","quiz","gig"];
+  var views = ["home","budget","quiz","gig","blog","article"];
   var hamburgerBtn = document.getElementById("hamburgerBtn");
   var mobileMenu = document.getElementById("mobileMenu");
 
@@ -1375,22 +1506,22 @@
   /* ---------- FOOTER MODALS: PRIVACY POLICY & TERMS OF SERVICE ---------- */
   var modalContent = {
     privacy: {
-      title: "Privacy Policy",
+      title: "Privacy & Cookies Policy",
       updated: "Last Updated: July 2026",
       body: [
-        "This Privacy Policy explains how BitVersus (\"we\", \"us\", or \"the Site\") handles information when you use our Student Budgeter, Side Hustle Finder, and Gig Pay Estimator tools. By using BitVersus, you agree to the practices described below.",
+        "This Privacy Policy explains how BitVersus (\"we,\" \"us,\" or \"the Site\") handles information when you use our Student Budgeter, Side Hustle Finder, and Gig Pay Estimator tools. By using BitVersus, you agree to the practices described below.",
 
-        "<strong>Information We Collect.</strong> BitVersus does not directly collect, store, or request personally identifiable information (PII) such as your name, email address, or financial account details. All figures you enter — income, city, hours worked, or quiz answers — are processed locally in your browser via JavaScript solely to generate on-screen calculations. This input data is not transmitted to or stored on our servers.",
+        "<strong>Information We Collect.</strong> BitVersus does not directly collect, store, or request personally identifiable information (such as your name, email address, or financial account details). The data you enter — income, city, hours worked, or quiz answers — is processed locally in your browser via JavaScript solely to generate the on-screen calculations. This input data is not transmitted to or stored on our servers.",
 
-        "<strong>Third-Party Advertising & Cookies.</strong> We partner with Google AdSense to serve advertisements on this Site. Google, as a third-party vendor, uses cookies (including the DART cookie) to serve ads to users based on their prior visits to BitVersus and other websites across the Internet. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to this Site and/or other sites you have visited. These cookies do not collect PII on our behalf and are governed by Google's own privacy policy.",
+        "<strong>First-Party and Third-Party Cookies (Google AdSense).</strong> This Site uses first-party and third-party cookies, including those from Google AdSense, to ensure the website functions correctly, to analyze traffic, and to personalize the advertisements displayed. Google, as a third-party vendor, uses cookies to serve ads based on your prior visits to BitVersus and other websites on the Internet. Google's use of advertising cookies enables Google and its partners to serve ads based on your visits to this Site and/or other sites you have visited. These cookies do not collect personally identifiable information on our behalf and are governed by Google's own privacy policy.",
 
-        "<strong>User Opt-Out Rights.</strong> You may opt out of personalized advertising at any time. Visit <a href=\"https://adssettings.google.com\" target=\"_blank\" rel=\"noopener\">Google's Ads Settings</a> to manage how Google shows you ads, or visit <a href=\"https://www.aboutads.info\" target=\"_blank\" rel=\"noopener\">www.aboutads.info</a> to opt out of the use of cookies by third-party vendors for personalized advertising. Opting out does not mean you will see fewer ads — only that the ads you see may be less relevant to your interests.",
+        "<strong>Non-Sensitive Data Collected via Cookies.</strong> Cookies used on this Site may collect non-sensitive data such as browser type, device, language, pages visited, time spent on the Site, and approximate geographic location. This information is used in aggregate to analyze Site performance and display relevant advertising, and it does not allow you to be personally identified on its own.",
 
-        "<strong>International Compliance (US, UK & Spain).</strong> BitVersus is committed to complying with applicable data protection frameworks for our audience, including the California Consumer Privacy Act (CCPA) for California residents, the EU General Data Protection Regulation (GDPR) for users in the United Kingdom and European Union, and Spain's Ley Orgánica de Protección de Datos y Garantía de los Derechos Digitales (LOPDGDD). Where required, you have the right to access, rectify, or request deletion of any personal data processed by third parties on our behalf, and to lodge a complaint with your local data protection authority.",
+        "<strong>How to Manage or Disable Cookies.</strong> You can manage, block, or delete cookies at any time from your browser settings (Chrome, Firefox, Safari, Edge, etc.), where these options are typically found under \"Privacy\" or \"Cookies.\" You can also visit <a href=\"https://adssettings.google.com\" target=\"_blank\" rel=\"noopener\">Google Ads Settings</a> to manage how Google shows you personalized ads, or <a href=\"https://www.aboutads.info\" target=\"_blank\" rel=\"noopener\">www.aboutads.info</a> to opt out of third-party cookies used for advertising purposes. Disabling cookies does not mean you will see fewer ads, but they may become less relevant to your interests, and some features of the Site may stop working correctly.",
 
-        "<strong>Cookie Preferences.</strong> You can manage or withdraw your cookie consent at any time through our Cookie Consent Banner (where shown) or through your browser's settings, which allow you to block or delete cookies. Note that disabling cookies may affect the functionality of certain features and advertisements on this Site.",
+        "<strong>Regulatory Compliance (Spain, EU, UK, and US).</strong> BitVersus is committed to complying with the data protection frameworks applicable to our audience, including the General Data Protection Regulation (GDPR) and Spain's Organic Law on Data Protection and Guarantee of Digital Rights (LOPDGDD) for users in Spain and the European Union, the UK GDPR and Data Protection Act for users in the United Kingdom, as well as the California Consumer Privacy Act (CCPA) for California residents. Where required by law, you have the right to access, rectify, or request deletion of any personal data processed by third parties on our behalf, and to file a complaint with your relevant data protection authority (in Spain, the Agencia Española de Protección de Datos).",
 
-        "<strong>Changes to This Policy.</strong> We may update this Privacy Policy periodically to reflect changes in our practices or applicable law. Continued use of BitVersus after changes are posted constitutes acceptance of the revised policy. Questions about this policy can be directed to our team through the contact details available on this Site."
+        "<strong>Changes to This Policy.</strong> We may update this Privacy Policy periodically to reflect changes in our practices or applicable legislation. Continued use of BitVersus after changes are published constitutes acceptance of the revised policy. Any questions about this policy can be directed to our team through the contact details available on this Site."
       ]
     },
     terms: {
@@ -1410,6 +1541,111 @@
         "<strong>Intellectual Property.</strong> All content, branding, design, and underlying code of BitVersus are the property of their respective owners and may not be reproduced or redistributed without permission, except for personal, non-commercial use of the calculators as intended.",
 
         "<strong>Changes to These Terms.</strong> We reserve the right to modify these Terms of Service at any time. Continued use of the Site following any changes constitutes your acceptance of the revised terms. These terms are governed in a manner consistent with applicable consumer protection laws in the user's jurisdiction, including the US, UK, and Spain."
+      ]
+    },
+  };
+
+  /* ---------- BLOG ARTICLES (FULL-PAGE POSTS, NO MODAL) ---------- */
+  var articleContent = {
+    article1: {
+      tag: "Budgeting",
+      title: "Advanced Budgeting and Saving Strategies to Beat Today's Inflation",
+      updated: "Blog · Budgeting · 6 min read",
+      body: [
+        "<p>Inflation has quietly rewritten the rules of personal finance. A budget that worked comfortably two or three years ago can leave you short today, even if your paycheck has grown, because rent, groceries, and everyday services have climbed faster than most salaries. The good news is that beating inflation is not about earning dramatically more money overnight — it is about rebuilding your budget around real, current numbers and putting a handful of smarter habits on autopilot.</p>",
+
+        "<h3>Rebuild Your Budget Around Real Prices, Not Last Year's Numbers</h3>",
+        "<p>The single biggest budgeting mistake in an inflationary environment is reusing old assumptions. If you calculated your grocery or transportation costs a year ago and never revisited them, your \"budget\" is really just a guess. Pull your last two or three months of actual bank and card statements and recalculate every category from scratch. This is exactly the approach behind our Student Budgeter tool: it splits your income into Needs, Wants, and Savings using current, location-specific baseline costs instead of outdated averages, so the percentages you see actually reflect what things cost where you live today.</p>",
+
+        "<h3>Adopt Value-Based Spending Instead of Blanket Cuts</h3>",
+        "<p>Slashing every category by the same percentage usually backfires, because it treats a subscription you barely use the same as the rent you cannot avoid. Value-based spending means ranking your expenses by how much genuine satisfaction or necessity they provide, then cutting from the bottom up.</p>",
+        "<ul><li>List every recurring expense and rate it from 1 (barely matters) to 5 (essential or genuinely loved).</li><li>Cancel or pause anything rated 1 or 2 for 60 days — you can always resubscribe later.</li><li>Redirect 100% of what you free up straight into savings before you get used to having it back.</li></ul>",
+
+        "<h3>Automate Savings So Inflation Can't Erode Them</h3>",
+        "<p>When prices rise, willpower-based saving is the first thing to collapse, because there is always a \"good reason\" to skip a transfer this month. The fix is to remove the decision entirely. Set up an automatic transfer to a separate savings or high-yield account the same day your paycheck lands, before you see the money in your everyday spending account. Treat that transfer exactly like a bill you cannot skip — because functionally, it is the most important one you have.</p>",
+
+        "<h3>Where to Cut Without Feeling the Pain</h3>",
+        "<ul><li><strong>Negotiate before you cancel.</strong> Call your streaming, insurance, or gym provider and ask for a retention discount before quitting outright — most companies would rather lower your price than lose you.</li><li><strong>Batch your grocery trips.</strong> Fewer store visits per week measurably reduces impulse purchases, which is where inflation hits hardest on small, unplanned items.</li><li><strong>Refinance recurring debt.</strong> If interest rates have shifted since you took out a loan or card balance, a consolidation or refinance can offset inflation's bite on your monthly obligations.</li><li><strong>Track price-per-unit, not price-per-item.</strong> Inflation often hides in smaller package sizes at the same price — comparing unit cost keeps you from paying more for less without noticing.</li></ul>",
+
+        "<p>None of these strategies require a windfall or a second job to implement — they simply require accurate numbers and a system that runs without relying on daily discipline. Run your own numbers through our Student Budgeter to see exactly how much breathing room a rebuilt, inflation-aware budget can create for your specific city and living situation.</p>"
+      ]
+    },
+    article2: {
+      tag: "Gig Economy",
+      title: "Maximizing Your Net Income in the Gig Economy: Uber, DoorDash & Beyond",
+      updated: "Blog · Gig Economy · 7 min read",
+      body: [
+        "<p>Gig work looks simple from the outside: log in, accept requests, get paid. But the gap between what a platform advertises and what actually lands in your bank account can be surprisingly wide once vehicle costs, platform fees, and taxes are factored in. Drivers and couriers who treat gig work like a real small business — rather than casual side income — consistently take home more per hour than those who don't.</p>",
+
+        "<h3>Understanding Gross vs. Net: Where Your Money Actually Goes</h3>",
+        "<p>Your gross earnings are what the app shows on the trip summary screen. Your net earnings are what remains after fuel or charging costs, vehicle depreciation and maintenance, insurance, phone data, and — critically — self-employment taxes. Many new gig workers only discover this gap at tax time, which is why our Gig Pay Estimator breaks earnings down into gross pay, estimated expenses, and a realistic net take-home figure by platform and city, instead of quoting a single optimistic hourly rate.</p>",
+
+        "<h3>Controlling Your Vehicle and Operating Costs</h3>",
+        "<ul><li><strong>Track every mile.</strong> Whether you drive or deliver, a simple mileage-tracking app captures a deduction that most new gig workers underclaim by a wide margin.</li><li><strong>Time preventive maintenance around demand, not damage.</strong> Oil changes, tire rotations, and brake checks during off-peak hours prevent costly breakdowns during your highest-earning windows.</li><li><strong>Choose fuel-efficient routing over the fastest route.</strong> A slightly longer route with less stop-and-go traffic often costs less in fuel and wear than the app's default suggestion.</li><li><strong>Separate a business bank account or card.</strong> This alone makes expense tracking and tax season dramatically easier, and it keeps personal spending from blurring into your true operating costs.</li></ul>",
+
+        "<h3>Self-Employment Tax Essentials</h3>",
+        "<p>In the United States, gig income is generally reported on a 1099 form, and you are responsible for both the employee and employer portions of Social Security and Medicare taxes — commonly referred to as self-employment tax — on top of ordinary income tax. This is the single most overlooked cost in gig work.</p>",
+        "<ul><li>Set aside 25–30% of every payout in a separate tax account as soon as it arrives, rather than waiting until filing season.</li><li>Make quarterly estimated tax payments if you expect to owe more than the IRS safe-harbor threshold, to avoid underpayment penalties.</li><li>Deduct legitimate business expenses — mileage or actual vehicle costs, phone bills used for work, hot bags or delivery equipment, and a portion of your data plan.</li><li>Keep every receipt and mileage log for at least three years in case of an audit.</li></ul>",
+
+        "<h3>Platform-Stacking to Raise Your Effective Hourly Rate</h3>",
+        "<p>Many experienced gig workers run two or three apps simultaneously during peak hours, accepting whichever offer pays best for a given trip. This reduces idle, unpaid waiting time and smooths out the natural demand gaps of any single platform. Combined with tracking your true expenses and taxes, platform-stacking is one of the most reliable ways to increase real, spendable income per hour worked — not just the number shown on a single app's dashboard.</p>",
+
+        "<p>Before your next shift, run your platform, city, and weekly hours through our Gig Pay Estimator to see a realistic net income projection that already accounts for expenses — so you can plan your taxes and your budget with numbers you can actually trust.</p>"
+      ]
+    },
+    article3: {
+      tag: "AI & Side Hustles",
+      title: "Exponential Side Hustle Ideas Powered by AI in 2026",
+      updated: "Blog · AI & Side Hustles · 8 min read",
+      body: [
+        "<p>Most traditional side hustles scale linearly: one more hour of work produces roughly one more unit of income. AI-powered side hustles break that pattern, because a single hour spent building a system, template, or automation can keep generating value long after you have stopped actively working on it. Here are four models that are genuinely gaining traction in 2026, along with a concrete first step for each.</p>",
+
+        "<h3>1. AI Content Repurposing Services</h3>",
+        "<p>Podcasters, coaches, and small businesses record far more raw video and audio than they ever turn into finished content. Using AI transcription and clipping tools, you can offer a repurposing service that turns one long-form recording into a week's worth of short clips, captions, and blog posts.</p>",
+        "<ul><li>Start by offering a free sample repurposing package to one podcaster or creator in exchange for a testimonial.</li><li>Package your service as a flat-rate weekly subscription rather than a one-off gig, since recurring revenue is the real leverage here.</li><li>Use AI captioning and auto-clip tools to keep turnaround time under two hours per episode.</li></ul>",
+
+        "<h3>2. Prompt-Engineered Digital Products</h3>",
+        "<p>Curated prompt libraries, custom GPT-style assistants, and AI-generated templates (resumes, contracts, lesson plans) sell well precisely because most buyers don't want to learn prompt engineering themselves — they want the finished output. The product is effectively free to reproduce once built, which is where the exponential leverage comes from.</p>",
+        "<ul><li>Pick one narrow niche audience (e.g., freelance photographers, small landlords, ESL teachers) rather than a generic \"AI prompts\" product.</li><li>Validate demand with a small, low-priced version before building a full library.</li><li>Bundle a short video walkthrough — buyers pay more for products that feel guided, not just downloaded.</li></ul>",
+
+        "<h3>3. AI Automation for Local Small Businesses</h3>",
+        "<p>Most local businesses — dentists, salons, contractors, restaurants — are still missing customer messages, forgetting to send reminders, or losing leads to slow email replies. Setting up simple AI-driven chatbots, appointment reminders, and review-request automations is high-value, low-competition work because it doesn't require you to write code from scratch, only to configure existing no-code automation platforms around a business's specific workflow.</p>",
+        "<ul><li>Offer one free automation (like a missed-call text-back system) to a local business as a portfolio piece.</li><li>Charge a modest setup fee plus a small monthly maintenance retainer — the retainer is what makes this scalable.</li><li>Focus on one vertical first (e.g., only salons) so your pitch and templates become reusable across clients.</li></ul>",
+
+        "<h3>4. Micro-SaaS Tools Built with No-Code + AI</h3>",
+        "<p>You no longer need a computer science degree to launch a small, useful web tool. Combining no-code website builders with AI coding assistants makes it realistic to launch a narrow, single-purpose tool — a calculator, a generator, a simple tracker — solving one specific problem for one specific audience, then monetizing it through a small subscription or one-time fee.</p>",
+        "<ul><li>Solve a problem you personally have or have seen repeatedly in a community you're part of; built-in distribution beats a perfect idea with no audience.</li><li>Ship a rough version in days, not months, and let real user feedback guide what you build next.</li><li>Charge from day one, even a small amount — free tools rarely convert into a sustainable income stream.</li></ul>",
+
+        "<p>The common thread across all four models is that the AI does the repetitive execution while you focus on positioning, audience, and packaging. If you're unsure which of these directions fits your skills and available time, take our Side Hustle Finder quiz for a personalized match based on your schedule, starting budget, and strengths.</p>"
+      ]
+    },
+    article4: {
+      tag: "Side Hustle",
+      title: "From Zero to Your First Client: Validate a Side Business Idea in 7 Days",
+      updated: "Blog · Side Hustle · 6 min read",
+      body: [
+        "<p>Most people who want to start a side business get stuck planning for months instead of testing anything with a real customer. Below is a compressed, one-week roadmap designed to validate a real idea and land a paying client before you invest in a website, branding, or inventory.</p>",
+
+        "<h3>Day 1–2: Choose a Problem, Not a Product</h3>",
+        "<p>Instead of starting from \"I want to sell candles,\" start from \"I want to help people relax at home without spending a lot.\" Talk to three to five people in your network about that specific problem and listen for whether they genuinely experience it — not whether they politely say your idea sounds nice.</p>",
+        "<ul><li>Ask open questions: \"What do you currently do about X?\" rather than \"Would you buy Y?\"</li><li>Watch for problems people already spend money trying to solve — that's a strong validation signal.</li><li>Write down the exact words people use to describe the problem; you'll reuse this language later in your offer.</li></ul>",
+
+        "<h3>Day 3: Create a Minimum Viable Offer</h3>",
+        "<p>You do not need a website, a logo, or a business name yet. Define exactly what you'll offer, to whom, and for how much, in a single clear sentence. The simpler it is to explain out loud, the easier it will be to sell.</p>",
+        "<ul><li>Write your offer as: \"I help [specific person] do [specific outcome] through [specific method].\"</li><li>Set an introductory price — you can raise it later once you have proof the offer works.</li><li>Decide on a simple way to accept payment (a payment link or app is enough; skip complex setups for now).</li></ul>",
+
+        "<h3>Day 4: Get Free Visibility</h3>",
+        "<p>Post your offer in relevant social media groups, local forums, or simply reach out directly to your own contacts. The goal is not to go viral — it's to reach the 20 to 30 right people who might need this today.</p>",
+        "<ul><li>Prioritize communities where the problem is actively discussed over broad, generic audiences.</li><li>Send a handful of direct, personal messages in addition to any public post — direct outreach converts far better at this stage.</li></ul>",
+
+        "<h3>Day 5–6: Close Your First Sale, Even at a Discount</h3>",
+        "<p>Offer a launch price in exchange for honest feedback and, if possible, a review or testimonial. Your first client is worth more for the validation and the lessons learned than for the profit margin on that single transaction.</p>",
+        "<ul><li>Deliver a little more than promised on this first order — early word-of-mouth depends heavily on first impressions.</li><li>Ask directly: \"What almost stopped you from saying yes?\" — the answer usually reveals your next objection to solve.</li></ul>",
+
+        "<h3>Day 7: Review the Results and Decide</h3>",
+        "<p>Ask yourself honestly: Was it easy to find interested people? Was the client satisfied? Would you repeat this process next week? If the answers are positive, you already have the foundation of a real side hustle. If not, you've spent only one week — not months — ruling out an idea that wasn't working.</p>",
+
+        "<p>Use our Side Hustle Finder tool to discover which type of side business best matches your available time, starting budget, and skill set before you begin this seven-day validation process.</p>"
       ]
     }
   };
@@ -1434,6 +1670,20 @@
   });
   modalOverlay.addEventListener("click", function(e){
     if(e.target === modalOverlay) modalOverlay.classList.add("hidden");
+  });
+
+  /* ---------- BLOG ARTICLES: FULL-PAGE VIEW (SPA, NO MODAL) ---------- */
+  document.querySelectorAll("[data-article]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var key = btn.getAttribute("data-article");
+      var article = articleContent[key];
+      if(!article) return;
+      document.getElementById("articleTag").textContent = article.tag;
+      document.getElementById("articleTitle").textContent = article.title;
+      document.getElementById("articleMeta").textContent = article.updated || "";
+      document.getElementById("articleBody").innerHTML = article.body.join("");
+      showView("article");
+    });
   });
 
 })();
