@@ -45,6 +45,15 @@
   h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;margin:0 0 .5em;letter-spacing:-.01em;}
   p{margin:0 0 1em;}
   .container{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  @media (min-width:1200px){
+    .container{padding:0 120px;}
+  }
+  @media (min-width:1500px){
+    .container{padding:0 200px;}
+  }
+  @media (min-width:1800px){
+    .container{padding:0 280px;}
+  }
   .mono{font-family:'IBM Plex Mono',monospace;}
   .eyebrow{
     font-family:'IBM Plex Mono',monospace;
@@ -81,6 +90,15 @@
   .nav-wrap{
     display:flex;align-items:center;justify-content:space-between;
     padding:16px 24px;max-width:var(--maxw);margin:0 auto;
+  }
+  @media (min-width:1200px){
+    .nav-wrap{padding:16px 120px;}
+  }
+  @media (min-width:1500px){
+    .nav-wrap{padding:16px 200px;}
+  }
+  @media (min-width:1800px){
+    .nav-wrap{padding:16px 280px;}
   }
   .brand{
     display:flex;align-items:center;gap:10px;
@@ -184,8 +202,8 @@
     background:linear-gradient(135deg, var(--ink), var(--ink-2));
     color:var(--paper);
   }
-  .ledger-result span{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(237,239,234,.7);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
-  .ledger-result b{font-family:'IBM Plex Mono',monospace;font-size:30px;color:var(--gold);}
+  .ledger-result span{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#FFFFFF;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  .ledger-result b{font-family:'IBM Plex Mono',monospace;font-size:30px;color:#F4D889;}
 
   /* ---------- SECTION SHELL ---------- */
   section{padding:76px 0;}
@@ -227,15 +245,16 @@
     background:linear-gradient(160deg, var(--ink), var(--ink-2));
     border-radius:12px;padding:26px;color:var(--paper);align-self:start;
   }
-  .result-panel h4{color:var(--paper);font-size:14px;text-transform:uppercase;letter-spacing:.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:18px;opacity:.8;}
-  .result-line{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(237,239,234,.14);font-size:14.5px;}
+  .result-panel h4{color:#FFFFFF;font-size:14px;text-transform:uppercase;letter-spacing:.08em;font-family:'IBM Plex Mono',monospace;margin-bottom:18px;opacity:.92;}
+  .result-line{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(237,239,234,.14);font-size:14.5px;color:#FFFFFF;}
   .result-line:last-child{border-bottom:none;}
-  .result-line b{font-family:'IBM Plex Mono',monospace;font-size:16px;}
+  .result-line span{color:#F4F5F1;}
+  .result-line b{font-family:'IBM Plex Mono',monospace;font-size:16px;color:#FFFFFF;}
   .result-highlight{
     margin-top:18px;padding:18px;border-radius:9px;background:rgba(196,151,46,.15);border:1px solid rgba(196,151,46,.4);
   }
-  .result-highlight span{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
-  .result-highlight b{font-family:'IBM Plex Mono',monospace;font-size:26px;}
+  .result-highlight span{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#F4D889;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  .result-highlight b{font-family:'IBM Plex Mono',monospace;font-size:26px;color:#FFFFFF;}
   .tool-disclaimer{padding:16px 36px 28px;font-size:12.5px;color:var(--ink-70);border-top:1px solid var(--line);}
 
   @media (max-width:820px){
@@ -265,13 +284,10 @@
     overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s, transform .15s;
   }
   .blog-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);}
-  .blog-thumb{
-    height:150px;
-    background:linear-gradient(135deg,var(--ink),var(--slate));
-    display:flex;align-items:center;justify-content:center;position:relative;
-  }
-  .blog-thumb span{
-    font-family:'IBM Plex Mono',monospace;color:var(--paper);opacity:.85;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  .blog-card-img{
+    width:100%;height:200px;display:block;
+    object-fit:cover;
+    border-radius:var(--radius) var(--radius) 0 0;
   }
   .blog-body{padding:24px;display:flex;flex-direction:column;flex:1;}
   .blog-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--gold-dark);margin-bottom:10px;letter-spacing:.05em;}
@@ -294,8 +310,8 @@
     background:var(--ink);color:var(--paper);border-radius:18px;padding:52px;
     display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;
   }
-  .cta-band h2{color:var(--paper);margin-bottom:10px;font-size:28px;}
-  .cta-band p{color:rgba(237,239,234,.75);margin:0;max-width:46ch;}
+  .cta-band h2{color:#FFFFFF;margin-bottom:10px;font-size:28px;}
+  .cta-band p{color:#F4F5F1;margin:0;max-width:46ch;}
   .cta-band .btn-primary{background:var(--gold);color:var(--ink);}
   .cta-band .btn-primary:hover{background:var(--gold-dark);color:#fff;}
 
@@ -324,24 +340,24 @@
   .disclaimer-strip p{font-size:12.8px;color:var(--ink-70);margin:0;text-align:center;max-width:900px;margin:0 auto;}
 
   /* ---------- FOOTER ---------- */
-  footer{background:var(--ink);color:rgba(237,239,234,.75);padding:64px 0 28px;}
+  footer{background:var(--ink);color:#F4F5F1;padding:64px 0 28px;}
   .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
-  .footer-brand .brand{color:var(--paper);}
+  .footer-brand .brand{color:#FFFFFF;}
   .footer-brand .brand .mark{background:var(--paper);color:var(--ink);}
-  .footer-brand p{font-size:14px;margin-top:14px;max-width:34ch;color:rgba(237,239,234,.6);}
-  footer h4{color:var(--paper);font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px;font-family:'IBM Plex Mono',monospace;}
+  .footer-brand p{font-size:14px;margin-top:14px;max-width:34ch;color:#E4E6DF;}
+  footer h4{color:#FFFFFF;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px;font-family:'IBM Plex Mono',monospace;}
   footer ul{list-style:none;margin:0;padding:0;}
   footer li{margin-bottom:12px;}
-  footer a{font-size:14px;color:rgba(237,239,234,.72);transition:color .15s;}
-  footer a:hover{color:var(--gold);}
+  footer a{font-size:14px;color:#DCDFD5;transition:color .15s;}
+  footer a:hover{color:#F4D889;}
   .footer-bottom{
     border-top:1px solid rgba(237,239,234,.14);padding-top:24px;
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
-    font-size:12.5px;color:rgba(237,239,234,.5);
+    font-size:12.5px;color:#D2D5C9;
   }
   .footer-bottom .legal-links{display:flex;gap:18px;flex-wrap:wrap;}
-  .footer-bottom a{color:rgba(237,239,234,.5);}
-  .footer-bottom a:hover{color:var(--gold);}
+  .footer-bottom a{color:#D2D5C9;}
+  .footer-bottom a:hover{color:#F4D889;}
   @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;}}
   @media (max-width:560px){.footer-grid{grid-template-columns:1fr;}}
 
@@ -391,7 +407,7 @@
       <div class="blog-grid">
 
         <a href="/blog/federal-student-loan-forgiveness-guide.html" class="blog-card">
-          <div class="blog-thumb"><span>Forgiveness</span></div>
+          <img class="blog-card-img" src="blog/images/art-1.jpg" alt="The Complete Guide to Federal Student Loan Forgiveness Programs">
           <div class="blog-body">
             <span class="blog-meta">FORGIVENESS · 12 MIN READ</span>
             <h3>The Complete Guide to Federal Student Loan Forgiveness Programs</h3>
@@ -401,7 +417,7 @@
         </a>
 
         <a href="/blog/student-loan-refinancing-interest-rates.html" class="blog-card">
-          <div class="blog-thumb"><span>Refinancing</span></div>
+          <img class="blog-card-img" src="blog/images/art-2.jpg" alt="Student Loan Refinancing Interest Rates: What to Expect">
           <div class="blog-body">
             <span class="blog-meta">REFINANCING · 9 MIN READ</span>
             <h3>Student Loan Refinancing Interest Rates: What to Expect</h3>
@@ -411,7 +427,7 @@
         </a>
 
         <a href="/blog/strategies-to-lower-monthly-student-loan-payments.html" class="blog-card">
-          <div class="blog-thumb"><span>Repayment</span></div>
+          <img class="blog-card-img" src="blog/images/art-3.jpg" alt="7 Proven Strategies to Lower Your Monthly Student Loan Payments">
           <div class="blog-body">
             <span class="blog-meta">REPAYMENT · 8 MIN READ</span>
             <h3>7 Proven Strategies to Lower Your Monthly Student Loan Payments</h3>
