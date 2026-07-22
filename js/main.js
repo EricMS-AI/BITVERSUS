@@ -1,4 +1,4 @@
-// PropFirmClarity — main.js
+// BitVersus — main.js
 document.addEventListener('DOMContentLoaded', function () {
 
   // Mobile nav toggle
@@ -19,6 +19,27 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  // Contact form — builds a proper mailto: link in JS instead of relying on
+  // the non-standard (and unreliably supported) action="mailto:" + method="post"
+  // combo, which some browsers block or mishandle with confusing validation errors.
+  var contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = contactForm.name.value.trim();
+      var email = contactForm.email.value.trim();
+      var subject = contactForm.subject.value.trim() || 'Message from BitVersus contact form';
+      var message = contactForm.message.value.trim();
+
+      var body = 'Name: ' + name + '\n' + 'Email: ' + email + '\n\n' + message;
+      var mailtoUrl = 'mailto:bitversus1@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailtoUrl;
+    });
+  }
 
   // Cookie consent banner
   var banner = document.getElementById('cookie-banner');
